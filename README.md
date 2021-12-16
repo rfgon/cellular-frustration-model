@@ -9,7 +9,7 @@
 
 ## Introduction
 
-The Cellular Frustration Model models interactions between agents that randomly interact and bond in pairs. When normal samples are presented an unstable frustrated dynamic follows, where agents continuously change pairs, generating a recognizable normality pattern. When abnormal samples are presented this frustrated dynamic breaks down, and agents start forming lasting pairs, which signals an anomaly. These interactions mimic the ones in the immune system between T and B cells.
+The Cellular Frustration Model models interactions between agents that randomly interact and bond in pairs. When normal samples are presented an unstable frustrated dynamic follows, where agents continuously change pairs, generating a recognizable normality pattern. When abnormal samples are presented this frustrated dynamic breaks down, and agents start forming lasting bonds, which signals an anomaly. These interactions mimic the ones in the immune system between T and B cells.
 
 ## Requirements
 
