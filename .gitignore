@@ -1,0 +1,17 @@
+# Object files
+*.o
+
+# Executables
+*.out
+*.csv*
+
+# Text files
+*.txt
+
+# Mac files
+.DS_Store
+
+# Directories
+input/
+output/
+.vscode/
