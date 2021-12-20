@@ -1,5 +1,5 @@
 import numpy as np
-print("gen")
+
 # Load parameters
 params = np.loadtxt("input/parameters.txt", dtype=str, delimiter=':')
 
