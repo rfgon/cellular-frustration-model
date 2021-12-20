@@ -1,10 +1,10 @@
 import numpy as np
-
+print("gen")
 # Load parameters
 params = np.loadtxt("input/parameters.txt", dtype=str, delimiter=':')
 
 # Random numbers seed
-seed = int(params[params[:,0]=="seed",1])
+seed = int(params[params[:, 0] == "seed", 1])
 rng = np.random.default_rng(seed)
 
 # Load training set
@@ -14,14 +14,14 @@ training_set = np.loadtxt("input/training_set.csv", dtype=float, delimiter=',')
 n_features = training_set.shape[1]
 
 # Number of presenters sets
-n_presenters_sets = int(params[params[:,0]=="presenters sets",1])
+n_presenters_sets = int(params[params[:, 0] == "presenters sets", 1])
 
 # Number of presenters/detectors
 n_presenters = n_detectors = n_features * n_presenters_sets
 
 # Build detectors' global lists
 global_lists = np.arange(2*n_presenters, dtype=int)
-global_lists = np.tile(global_lists, reps=(n_detectors,1))
+global_lists = np.tile(global_lists, reps=(n_detectors, 1))
 
 # Shuffle global lists
 global_lists = rng.permuted(global_lists, axis=1)

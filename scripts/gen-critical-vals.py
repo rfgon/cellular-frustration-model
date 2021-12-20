@@ -4,11 +4,11 @@ import numpy as np
 params = np.loadtxt("input/parameters.txt", dtype=str, delimiter=':')
 
 # Random numbers seed
-seed = int(params[params[:,0]=="seed",1])
+seed = int(params[params[:, 0] == "seed", 1])
 rng = np.random.default_rng(seed)
 
 # nu values
-max_nu = float(params[params[:,0]=="max nu",1])
+max_nu = float(params[params[:, 0] == "max nu", 1])
 
 # Load training set
 training_set = np.loadtxt("input/training_set.csv", dtype=float, delimiter=',')
@@ -20,7 +20,7 @@ n_samples = training_set.shape[0]
 n_features = training_set.shape[1]
 
 # Number of presenters sets
-n_presenters_sets = int(params[params[:,0]=="presenters sets",1])
+n_presenters_sets = int(params[params[:, 0] == "presenters sets", 1])
 
 # Number of detectors
 n_detectors = n_features * n_presenters_sets
@@ -29,7 +29,7 @@ n_detectors = n_features * n_presenters_sets
 labels = np.loadtxt("input/labels.csv", dtype=int, delimiter=',')
 
 # Unique clusters and number of samples in each one
-clusters,clusters_n_samples = np.unique(labels, return_counts=True)
+clusters, clusters_n_samples = np.unique(labels, return_counts=True)
 
 # Number of clusters
 n_clusters = len(clusters)
@@ -38,16 +38,16 @@ n_clusters = len(clusters)
 clusters_samples = []
 
 # Assign samples to clusters
-for cluster,cluster_index in zip(clusters, range(n_clusters)):
+for cluster, cluster_index in zip(clusters, range(n_clusters)):
     clusters_samples.append(np.empty((clusters_n_samples[cluster_index]), dtype=int))
     sample_count = 0
-    for label,sample_index in zip(labels, range(n_samples)):
+    for label, sample_index in zip(labels, range(n_samples)):
         if (label == cluster):
             clusters_samples[cluster_index][sample_count] = sample_index
             sample_count += 1
 
 # Build samples queue
-samples_queue = np.ravel(clusters_samples).reshape((1,n_samples))
+samples_queue = np.ravel(clusters_samples).reshape((1, n_samples))
 
 # Export samples queue
 np.savetxt("input/samples_queue.csv", samples_queue, fmt='%i', delimiter=',')
@@ -86,9 +86,9 @@ for cluster_index in range(n_clusters):
 
         # Get critical values for each feature
         for feature in range(n_features):
-            left_criticals[detector][feature] = np.partition(training_set[clusters_samples[cluster_index]][:,feature], n_samples_out_left)[n_samples_out_left]
+            left_criticals[detector][feature] = np.partition(training_set[clusters_samples[cluster_index]][:, feature], n_samples_out_left)[n_samples_out_left]
 
-            right_criticals[detector][feature] = np.partition(training_set[clusters_samples[cluster_index]][:,feature], n_samples_out_right)[n_samples_out_right]
+            right_criticals[detector][feature] = np.partition(training_set[clusters_samples[cluster_index]][:, feature], n_samples_out_right)[n_samples_out_right]
 
 # Export critical values lists
 np.savetxt("input/left_criticals.csv", left_criticals, fmt='%.6f', delimiter=',')
