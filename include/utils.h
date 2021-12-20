@@ -6,6 +6,8 @@
 #include <map>          // map
 #include <fstream>      // ifstream
 #include <algorithm>    // remove, find
+#include <vector>       // vector
+#include <sstream>      // stringstream
 
 namespace cfm
 {
@@ -55,6 +57,111 @@ namespace cfm
         }
 
         return params;
+    }
+
+    // Load floating-point data from a file into a matrix
+    std::vector<std::vector<float>> loadFloatMatrix(std::string const file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data matrix
+        std::vector<std::vector<float>> matrix;
+
+        // String for line and value
+        std::string line, val;
+
+        // Read each line
+        while (std::getline(file, line)) {
+            // Row vector
+            std::vector<float> vector;
+
+            // Stringstream line
+            std::stringstream s(line);
+
+            // Get each feature's value
+            while (std::getline(s, val, ',')) {
+                // Add value to row vector
+                vector.push_back(std::stod(val));
+            }
+
+            // Add row vector to matrix
+            matrix.push_back(vector);
+        }
+
+        return matrix;
+    }
+
+    // Load integer data from a file into a matrix
+    std::vector<std::vector<int>> loadIntMatrix(std::string const file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data matrix
+        std::vector<std::vector<int>> matrix;
+
+        // String for line and value
+        std::string line, val;
+
+        // Read each line
+        while (std::getline(file, line)) {
+            // Row vector
+            std::vector<int> vector;
+
+            // Stringstream line
+            std::stringstream s(line);
+
+            // Get each feature's value
+            while (std::getline(s, val, ',')) {
+                // Add value to row vector
+                vector.push_back(std::stoi(val));
+            }
+
+            // Add row vector to matrix
+            matrix.push_back(vector);
+        }
+
+        return matrix;
+    }
+
+    // Load integer data from a file into a vector
+    std::vector<int> loadIntVector(std::string const file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data vector
+        std::vector<int> vector;
+
+        // String value
+        std::string val;
+
+        // Get each feature's value
+        while (std::getline(file, val, ',')) {
+            // Add value to vector
+            vector.push_back(std::stoi(val));
+        }
+
+        return vector;
     }
 
 } // namespace cfm
