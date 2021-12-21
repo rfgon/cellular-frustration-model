@@ -1,4 +1,5 @@
 #include "../include/utils.h"
+#include "../include/cfmodel.h"
 
 using namespace cfm;
 
@@ -33,6 +34,9 @@ int main()
 
     // Number of agents
     int const n_agents = n_presenters + n_detectors;
+
+    // Initialize agents
+    Agents ag = initAgents(n_agents);
 
     return 0;
 }
