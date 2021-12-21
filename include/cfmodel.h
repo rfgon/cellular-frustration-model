@@ -13,7 +13,7 @@ namespace cfm
 
         std::vector<unsigned short int> subtype;
 
-        // Id of partner agent
+        // Partner agent's id
         std::vector<short int> match;
 
         // Signal shown
@@ -91,6 +91,16 @@ namespace cfm
         }
 
         return agents;
+    }
+
+    // Initialize detectors' global lists
+    void initDetectorsGlobalLists(Agents& agents, const std::vector<std::vector<unsigned short int>>& global_lists)
+    {
+        unsigned short int const n_detectors = agents.id.size() / 2;
+        unsigned short int i = 0;
+        for (auto& row : global_lists) {
+            agents.global_list.at(n_detectors + i++) = row;
+        }
     }
 
 } // namespace cfm

@@ -137,6 +137,45 @@ namespace cfm
         return matrix;
     }
 
+    // Load unsigned integer data from a file into a matrix
+    std::vector<std::vector<unsigned short int>> loadUnsignedIntMatrix(std::string const file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data matrix
+        std::vector<std::vector<unsigned short int>> matrix;
+
+        // String for line and value
+        std::string line, val;
+
+        // Read each line
+        while (std::getline(file, line)) {
+            // Row vector
+            std::vector<unsigned short int> vector;
+
+            // Stringstream line
+            std::stringstream s(line);
+
+            // Get each feature's value
+            while (std::getline(s, val, ',')) {
+                // Add value to row vector
+                vector.push_back(std::stoi(val));
+            }
+
+            // Add row vector to matrix
+            matrix.push_back(vector);
+        }
+
+        return matrix;
+    }
+
     // Load integer data from a file into a vector
     std::vector<int> loadIntVector(std::string const file_path)
     {

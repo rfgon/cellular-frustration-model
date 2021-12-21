@@ -18,7 +18,7 @@ int main()
     int const sample_rounds = params["sample rounds"];
 
     // Load training set
-    std::vector<std::vector<float>> training_set = loadFloatMatrix("../cellular-frustration-model/input/training_set.csv");
+    const std::vector<std::vector<float>> training_set = loadFloatMatrix("../cellular-frustration-model/input/training_set.csv");
 
     // Number of samples
     int n_samples = training_set.size();
@@ -37,6 +37,10 @@ int main()
 
     // Initialize agents
     Agents ag = initAgents(n_agents);
+
+    // Load detectors' global lists
+    const std::vector<std::vector<unsigned short int>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
+    initDetectorsGlobalLists(ag, global_lists);
 
     return 0;
 }
