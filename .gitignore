@@ -72,7 +72,7 @@ Thumbs.db
 *.exe
 
 # Text files
-*.txt
+*.txt*
 *.csv*
 
 # Directories
