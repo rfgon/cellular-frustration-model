@@ -2,6 +2,7 @@
 #define CFMODEL_H
 
 #include "utils.h"
+#include <random>   // default_random_engine
 
 namespace cfm
 {
@@ -94,24 +95,24 @@ namespace cfm
     }
 
     // Initialize detectors' global lists
-    void initDetectorsGlobalLists(Agents& agents, unsigned short int n_detectors, const std::vector<std::vector<unsigned short int>>& global_lists)
+    void initDetectorsGlobalLists(Agents& agents, unsigned short int n_presenters, const std::vector<std::vector<unsigned short int>>& global_lists)
     {
         unsigned short int i = 0;
         for (auto& row : global_lists) {
-            agents.global_list.at(n_detectors + i++) = row;
+            agents.global_list.at(n_presenters + i++) = row;
         }
     }
 
     // Initialize detectors' critical values lists
-    void initDetectorsCriticalLists(Agents& agents, unsigned short int n_detectors, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
+    void initDetectorsCriticalLists(Agents& agents, unsigned short int n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
     {
         unsigned short int i = 0;
         for (auto& row : left_criticals) {
-            agents.left_criticals.at(n_detectors + i++) = row;
+            agents.left_criticals.at(n_presenters + i++) = row;
         }
         i = 0;
         for (auto& row : right_criticals) {
-            agents.right_criticals.at(n_detectors + i++) = row;
+            agents.right_criticals.at(n_presenters + i++) = row;
         }
     }
 
