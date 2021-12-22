@@ -116,8 +116,8 @@ namespace cfm
         }
     }
 
-    // Assign sample features to presenters as signals
-    void setPresentersSignals(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features, const std::vector<float> sample)
+    // Map sample features to presenters' signals
+    void mapSampleToPresentersSignals(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features, const std::vector<float> sample)
     {
         unsigned short int feature = 0;
         for (unsigned short int i = 0; i < n_presenters; ++i) {
@@ -144,7 +144,7 @@ namespace cfm
             // Change sample
             if (round % sample_rounds == 0) {
                 // Change presenters signals
-                setPresentersSignals(agents, n_presenters, n_features, training_set.at(samples_queue.at(sample_counter++)));
+                mapSampleToPresentersSignals(agents, n_presenters, n_features, training_set.at(samples_queue.at(sample_counter++)));
 
                 // Reset sample counter
                 if (sample_counter == n_samples) {
