@@ -129,6 +129,40 @@ namespace cfm
         }
     }
 
+    // Map presenters' signals to detectors' local lists
+    void mapSignalsToDetectorsLocalLists(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features)
+    {
+        // Loop through detectors
+        for (unsigned short int i = n_presenters; i < agents.id.size(); ++i) {
+            agents.local_list.at(i).resize(n_presenters);
+
+            // Loop through presenters
+            unsigned short int feature = 0;
+            for (unsigned short int j = 0; j < n_presenters; ++j) {
+                // Reset feature counter at the end of every presenter set
+                if (feature == n_features) {
+                    feature = 0;
+                }
+
+                // Get signal shown by each presenter
+                float signal = agents.signal.at(j);
+
+                // Get detector's critical values
+                float left_critical = agents.left_criticals.at(i).at(feature);
+                float right_critical = agents.right_criticals.at(i).at(feature++);
+
+                // Signal out
+                if (signal <= left_critical || signal >= right_critical) {
+                    agents.local_list.at(i).at(j) = 2*j + 1;
+                }
+                // Signal in
+                else {
+                    agents.local_list.at(i).at(j) = 2*j + 0;
+                }
+            }
+        }
+    }
+
     // Base cellular frustration dynamics
     void cellularFrustration(unsigned short int const seed, Agents& agents, unsigned short int const n_presenters, unsigned int const frustration_rounds, unsigned short int const sample_rounds, unsigned short int const n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const n_features, const std::vector<std::vector<float>>& training_set)
     {
@@ -145,6 +179,9 @@ namespace cfm
             if (round % sample_rounds == 0) {
                 // Change presenters signals
                 mapSampleToPresentersSignals(agents, n_presenters, n_features, training_set.at(samples_queue.at(sample_counter++)));
+
+                // Change detectors local lists
+                mapSignalsToDetectorsLocalLists(agents, n_presenters, n_features);
 
                 // Reset sample counter
                 if (sample_counter == n_samples) {
