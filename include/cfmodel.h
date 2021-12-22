@@ -116,6 +116,19 @@ namespace cfm
         }
     }
 
+    // Base cellular frustration dynamics
+    void cellularFrustration(unsigned short int const seed, Agents& agents, unsigned short int const n_presenters, unsigned int const frustration_rounds, unsigned short int const sample_rounds, unsigned short int const n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const n_features, const std::vector<std::vector<float>>& training_set)
+    {
+        // Initialize generator used in dynamic loop
+        std::default_random_engine generator;
+        generator.seed(seed);
+
+        // Main loop
+        for (unsigned int round = 0; round < frustration_rounds; ++round) {
+
+        }
+    }
+
 } // namespace cfm
 
 #endif // CFMODEL_H

@@ -53,5 +53,11 @@ int main()
     // Load samples queue
     std::vector<unsigned short int> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
 
+    // Number of iterations
+    unsigned int const frustration_rounds = params["frustration rounds"];
+
+    // Dynamics with untrained detectors
+    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+
     return 0;
 }
