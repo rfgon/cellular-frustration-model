@@ -42,8 +42,8 @@ namespace cfm
     // Unmatch all agents
     void resetAgentsMatch(Agents& agents)
     {
-        for (int i = 0; i < agents.id.size(); ++i) {
-            agents.match.at(i) = -1;
+        for (auto& match : agents.match) {
+            match = -1;
         }
     }
 
