@@ -203,6 +203,33 @@ namespace cfm
         return vector;
     }
 
+    // Load integer data from a file into a vector
+    std::vector<unsigned short int> loadUnsignedIntVector(std::string const file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data vector
+        std::vector<unsigned short int> vector;
+
+        // String value
+        std::string val;
+
+        // Get each feature's value
+        while (std::getline(file, val, ',')) {
+            // Add value to vector
+            vector.push_back(std::stoi(val));
+        }
+
+        return vector;
+    }
+
 } // namespace cfm
 
 #endif // UTILS_H

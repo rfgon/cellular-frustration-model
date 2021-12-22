@@ -50,5 +50,8 @@ int main()
 
     initDetectorsCriticalLists(ag, left_criticals, right_criticals);
 
+    // Load samples queue
+    std::vector<unsigned short int> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
+
     return 0;
 }
