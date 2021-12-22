@@ -40,7 +40,15 @@ int main()
 
     // Load detectors' global lists
     const std::vector<std::vector<unsigned short int>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
+
     initDetectorsGlobalLists(ag, global_lists);
+
+    // Load detectors' left/right critical values lists
+    std::vector<std::vector<float>> left_criticals = loadFloatMatrix("../cellular-frustration-model/input/left_criticals.csv");
+
+    std::vector<std::vector<float>> right_criticals = loadFloatMatrix("../cellular-frustration-model/input/right_criticals.csv");
+
+    initDetectorsCriticalLists(ag, left_criticals, right_criticals);
 
     return 0;
 }

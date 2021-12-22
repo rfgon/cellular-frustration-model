@@ -103,6 +103,20 @@ namespace cfm
         }
     }
 
+    // Initialize detectors' critical values lists
+    void initDetectorsCriticalLists(Agents& agents, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
+    {
+        unsigned short int const n_detectors = agents.id.size() / 2;
+        unsigned short int i = 0;
+        for (auto& row : left_criticals) {
+            agents.left_criticals.at(n_detectors + i++) = row;
+        }
+        i = 0;
+        for (auto& row : right_criticals) {
+            agents.right_criticals.at(n_detectors + i++) = row;
+        }
+    }
+
 } // namespace cfm
 
 #endif // CFMODEL_H
