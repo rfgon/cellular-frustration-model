@@ -116,6 +116,19 @@ namespace cfm
         }
     }
 
+    // Assign sample features to presenters as signals
+    void setPresentersSignals(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features, const std::vector<float> sample)
+    {
+        unsigned short int feature = 0;
+        for (unsigned short int i = 0; i < n_presenters; ++i) {
+            // Reset feature counter at the end of every presenter set
+            if (i % n_features == 0) {
+                feature = 0;
+            }
+            agents.signal.at(i) = sample.at(feature++);
+        }
+    }
+
     // Base cellular frustration dynamics
     void cellularFrustration(unsigned short int const seed, Agents& agents, unsigned short int const n_presenters, unsigned int const frustration_rounds, unsigned short int const sample_rounds, unsigned short int const n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const n_features, const std::vector<std::vector<float>>& training_set)
     {
@@ -123,9 +136,21 @@ namespace cfm
         std::default_random_engine generator;
         generator.seed(seed);
 
+        // Sample counter used to loop samples
+        int sample_counter = 0;
+
         // Main loop
         for (unsigned int round = 0; round < frustration_rounds; ++round) {
+            // Change sample
+            if (round % sample_rounds == 0) {
+                // Change presenters signals
+                setPresentersSignals(agents, n_presenters, n_features, training_set.at(samples_queue.at(sample_counter++)));
 
+                // Reset sample counter
+                if (sample_counter == n_samples) {
+                    sample_counter = 0;
+                }
+            }
         }
     }
 
