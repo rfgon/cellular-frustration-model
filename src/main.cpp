@@ -9,46 +9,46 @@ int main()
     std::map<std::string,int> params = parseParameters("../cellular-frustration-model/input/parameters.txt");
 
     // Seed
-    int const seed = params["seed"];
+    unsigned short int const seed = params["seed"];
 
     // Number of presenters sets
-    int const n_presenters_sets = params["presenters sets"];
+    unsigned short int const n_presenters_sets = params["presenters sets"];
 
     // Number of rounds spent with a given sample
-    int const sample_rounds = params["sample rounds"];
+    unsigned short int const sample_rounds = params["sample rounds"];
 
     // Load training set
     const std::vector<std::vector<float>> training_set = loadFloatMatrix("../cellular-frustration-model/input/training_set.csv");
 
     // Number of samples
-    int n_samples = training_set.size();
+    unsigned short int n_samples = training_set.size();
 
     // Number of features
-    int const n_features = training_set.at(0).size();
+    unsigned short int const n_features = training_set.at(0).size();
 
     // Number of presenters
-    int const n_presenters = n_features * n_presenters_sets;
+    unsigned short int const n_presenters = n_features * n_presenters_sets;
 
     // Number of detectors
-    int const n_detectors = n_presenters;
+    unsigned short int const n_detectors = n_presenters;
 
     // Number of agents
-    int const n_agents = n_presenters + n_detectors;
+    unsigned short int const n_agents = n_presenters + n_detectors;
 
     // Initialize agents
-    Agents ag = initAgents(n_agents);
+    Agents agents = initAgents(n_agents);
 
     // Load detectors' global lists
     const std::vector<std::vector<unsigned short int>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
 
-    initDetectorsGlobalLists(ag, global_lists);
+    initDetectorsGlobalLists(agents, n_detectors, global_lists);
 
     // Load detectors' left/right critical values lists
     std::vector<std::vector<float>> left_criticals = loadFloatMatrix("../cellular-frustration-model/input/left_criticals.csv");
 
     std::vector<std::vector<float>> right_criticals = loadFloatMatrix("../cellular-frustration-model/input/right_criticals.csv");
 
-    initDetectorsCriticalLists(ag, left_criticals, right_criticals);
+    initDetectorsCriticalLists(agents, n_detectors, left_criticals, right_criticals);
 
     // Load samples queue
     std::vector<unsigned short int> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
