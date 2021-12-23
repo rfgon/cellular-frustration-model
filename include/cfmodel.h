@@ -49,7 +49,7 @@ namespace cfm
     }
 
     // Initialize agents' properties
-    Agents initAgents(int const n_agents)
+    Agents initAgents(unsigned short int const n_agents)
     {
         Agents agents;
 
@@ -64,26 +64,26 @@ namespace cfm
         agents.left_criticals.resize(n_agents);
         agents.right_criticals.resize(n_agents);
 
-        for (int i = 0; i < n_agents; ++i) {
+        for (unsigned short int i = 0; i < n_agents; ++i) {
             agents.id.at(i) = i;
 
             if (agents.id.at(i) < n_agents / 2) {
                 // Different subtypes for each half of presenters
                 if (agents.id.at(i) < n_agents / 4) {
-                    agents.subtype.at(i) = 1;
-                    agents.global_list.at(i) = {1, 2};
+                    agents.subtype.at(i) = 0;
+                    agents.global_list.at(i) = {agents.subtype.at(i), 1};
                 } else {
-                    agents.subtype.at(i) = 2;
-                    agents.global_list.at(i) = {2, 1};
+                    agents.subtype.at(i) = 1;
+                    agents.global_list.at(i) = {agents.subtype.at(i), 0};
                 }
             } else {
                 // Different subtypes for each half of detectors
                 if (agents.id.at(i) < n_agents * 3/4) {
-                    agents.subtype.at(i) = 1;
-                    agents.signal.at(i) = 1;
+                    agents.subtype.at(i) = 0;
+                    agents.signal.at(i) = agents.subtype.at(i);
                 } else {
-                    agents.subtype.at(i) = 2;
-                    agents.signal.at(i) = 2;
+                    agents.subtype.at(i) = 1;
+                    agents.signal.at(i) = agents.subtype.at(i);
                 }
             }
 
@@ -188,8 +188,21 @@ namespace cfm
         }
     }
 
+    // Get the rank of an agent's signal in another agent's global list
+    unsigned short int getSignalRank(Agents& agents, unsigned short int const& n_presenters, short int const& agent, short int const& agent_showing_signal)
+    {
+        // Presenters
+        if (agent < n_presenters) {
+            return agents.global_list.at(agent).at(agents.signal.at(agent_showing_signal));
+        }
+        // Detectors
+        else {
+            return agents.global_list.at(agent).at(agents.local_list.at(agent).at(agent_showing_signal));
+        }
+    }
+
     // Decision rules for pairing agents
-    void decisionRules(Agents& agents, unsigned short int const& presenter, unsigned short int const& detector)
+    void decisionRules(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& presenter, unsigned short int const& detector)
     {
         // Presenter's partner
         short int presenter_partner = agents.match.at(presenter);
@@ -204,7 +217,17 @@ namespace cfm
 
             }
         } else {
+            if (presenter_partner == -1) {
 
+            } else {
+                // Check detector's preference
+                if (getSignalRank(agents, n_presenters, detector, presenter) < getSignalRank(agents, n_presenters, detector, detector_partner)) {
+                    // Check presenter's preference
+                    if (getSignalRank(agents, n_presenters, presenter, detector) < getSignalRank(agents, n_presenters, presenter, presenter_partner)) { // Rule 5
+                        updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                    }
+                }
+            }
         }
     }
 
@@ -219,7 +242,7 @@ namespace cfm
 
         for (auto& interaction : interactions_queue) {
             // Decide interaction outcome
-            decisionRules(agents, interaction, interaction_pairs.at(interaction));
+            decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
         }
     }
 
