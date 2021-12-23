@@ -163,6 +163,51 @@ namespace cfm
         }
     }
 
+    // Update agent pairs and reset their tau counters
+    void updateAgentPairs(Agents& agents, unsigned short int const& presenter, short int const& presenter_partner, unsigned short int const& detector, short int const& detector_partner)
+    {
+        // Pair agents and register/reset taus
+        agents.match.at(presenter) = detector;
+        agents.match.at(detector) = presenter;
+        ++agents.taus_map.at(presenter)[agents.tau.at(presenter)];
+        ++agents.taus_map.at(detector)[agents.tau.at(detector)];
+        agents.tau.at(presenter) = 0;
+        agents.tau.at(detector) = 0;
+
+        // Unpair old partner agents and register/reset taus
+        if (presenter_partner > -1) {
+            agents.match.at(presenter_partner) = -1;
+            ++agents.taus_map.at(presenter_partner)[agents.tau.at(presenter_partner)];
+            agents.tau.at(presenter_partner) = 0;
+        }
+
+        if (detector_partner > -1) {
+            agents.match.at(detector_partner) = -1;
+            ++agents.taus_map.at(detector_partner)[agents.tau.at(detector_partner)];
+            agents.tau.at(detector_partner) = 0;
+        }
+    }
+
+    // Decision rules for pairing agents
+    void decisionRules(Agents& agents, unsigned short int const& presenter, unsigned short int const& detector)
+    {
+        // Presenter's partner
+        short int presenter_partner = agents.match.at(presenter);
+
+        // Detector's partner
+        short int detector_partner = agents.match.at(detector);
+
+        if (detector_partner == -1) {
+            if (presenter_partner == -1) { // Rule 1
+                updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+            } else {
+
+            }
+        } else {
+
+        }
+    }
+
     // Agents' interaction and pairing dynamics
     void interactions(std::default_random_engine& generator, Agents& agents, unsigned short int const n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
     {
@@ -173,6 +218,8 @@ namespace cfm
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
         for (auto& interaction : interactions_queue) {
+            // Decide interaction outcome
+            decisionRules(agents, interaction, interaction_pairs.at(interaction));
         }
     }
 
@@ -212,6 +259,16 @@ namespace cfm
 
             // Loop through interactions between pairs of agents
             interactions(generator, agents, n_presenters, interactions_queue, interaction_pairs);
+
+            // Update agents' taus
+            for (auto& tau : agents.tau) {
+                ++tau;
+            }
+        }
+
+        // Register taus on last round
+        for (auto& id : agents.id) {
+            ++agents.taus_map.at(id)[agents.tau.at(id)];
         }
     }
 
