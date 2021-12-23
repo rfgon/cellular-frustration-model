@@ -163,6 +163,19 @@ namespace cfm
         }
     }
 
+    // Agents' interaction and pairing dynamics
+    void interactions(std::default_random_engine& generator, Agents& agents, unsigned short int const n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
+    {
+        // Shuffle interactions queue
+        std::shuffle(interactions_queue.begin(), interactions_queue.end(), generator);
+
+        // Shuffle interaction pairs
+        std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
+
+        for (auto& interaction : interactions_queue) {
+        }
+    }
+
     // Base cellular frustration dynamics
     void cellularFrustration(unsigned short int const seed, Agents& agents, unsigned short int const n_presenters, unsigned int const frustration_rounds, unsigned short int const sample_rounds, unsigned short int const n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const n_features, const std::vector<std::vector<float>>& training_set)
     {
@@ -172,6 +185,14 @@ namespace cfm
 
         // Sample counter used to loop samples
         int sample_counter = 0;
+
+        // Initialize interactions queue (indices = priority; elements = interaction pairs)
+        std::vector<unsigned short int> interactions_queue(n_presenters);
+        std::iota(interactions_queue.begin(), interactions_queue.end(), 0);
+
+        // Interaction pairs (indices = presenters' ids; elements = detectors' ids)
+        std::vector<unsigned short int> interaction_pairs(n_presenters);
+        std::iota(interaction_pairs.begin(), interaction_pairs.end(), n_presenters);
 
         // Main loop
         for (unsigned int round = 0; round < frustration_rounds; ++round) {
@@ -188,6 +209,9 @@ namespace cfm
                     sample_counter = 0;
                 }
             }
+
+            // Loop through interactions between pairs of agents
+            interactions(generator, agents, n_presenters, interactions_queue, interaction_pairs);
         }
     }
 
