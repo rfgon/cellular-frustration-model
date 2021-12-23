@@ -201,6 +201,15 @@ namespace cfm
         }
     }
 
+    // Return true if a detector sees a presenter's signal as normal and false otherwise
+    bool getSignalNormality(Agents& agents, unsigned short int const& detector, unsigned short int const& presenter)
+    {
+        if (agents.local_list.at(detector).at(presenter) % 2 == 0) {
+            return true;
+        }
+        return false;
+    }
+
     // Decision rules for pairing agents
     void decisionRules(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& presenter, unsigned short int const& detector)
     {
@@ -225,6 +234,11 @@ namespace cfm
                     // Check presenter's preference
                     if (getSignalRank(agents, n_presenters, presenter, detector) < getSignalRank(agents, n_presenters, presenter, presenter_partner)) { // Rule 5
                         updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                    } else if (getSignalRank(agents, n_presenters, presenter, detector) == getSignalRank(agents, n_presenters, presenter, presenter_partner)) {
+                        // Check how detectors see presenters' signals (as normal or abnormal)
+                        if (getSignalNormality(agents, detector, presenter) && !getSignalNormality(agents, detector, detector_partner) && !getSignalNormality(agents, presenter_partner, presenter)) { // Rule 6
+                            updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                        }
                     }
                 }
             }
