@@ -2,7 +2,7 @@
 #define CFMODEL_H
 
 #include "utils.h"
-#include <random>   // default_random_engine
+#include <random>   // mt19937, uniform_int_distribution, generate
 
 namespace cfm
 {
@@ -144,7 +144,7 @@ namespace cfm
                     feature = 0;
                 }
 
-                // Get signal shown by each presenter
+                // Get signal shown by presenter
                 float signal = agents.signal.at(j);
 
                 // Get detector's critical values
@@ -178,28 +178,55 @@ namespace cfm
         }
     }
 
+    // Update agent match
+    void updateAgentMatch(Agents& agents, unsigned short int const& agent, short int const& match)
+    {
+        agents.match.at(agent) = match;
+        ++agents.taus_map.at(agent)[agents.tau.at(agent)];
+        agents.tau.at(agent) = 0;
+    }
+
+    // Randomly unpair agents to avoid stable matchings
+    void dissociation(std::mt19937& generator, Agents& agents)
+    {
+        // Dissociation probability
+        std::uniform_int_distribution<unsigned short int> distribution(0, 999);
+
+        // Initialize interaction pairs dissociation probabilities
+        std::vector<unsigned short int> dissociation_probabilities(agents.id.size());
+        std::generate(std::begin(dissociation_probabilities), std::end(dissociation_probabilities), [&]{ return distribution(generator); });
+
+        // Loop through all agents
+        for (auto& id : agents.id) {
+            // Check if agent is paired
+            short int agent_partner = agents.match.at(id);
+            if (agent_partner > -1) {
+                // Dissociate
+                if (dissociation_probabilities.at(id) == 0) {
+                    // Agent
+                    updateAgentMatch(agents, id, -1);
+
+                    // Agent partner
+                    updateAgentMatch(agents, agent_partner, -1);
+                }
+            }
+        }
+    }
+
     // Update agent pairs and reset their tau counters
     void updateAgentPairs(Agents& agents, unsigned short int const& presenter, short int const& presenter_partner, unsigned short int const& detector, short int const& detector_partner)
     {
         // Pair agents and register/reset taus
-        agents.match.at(presenter) = detector;
-        agents.match.at(detector) = presenter;
-        ++agents.taus_map.at(presenter)[agents.tau.at(presenter)];
-        ++agents.taus_map.at(detector)[agents.tau.at(detector)];
-        agents.tau.at(presenter) = 0;
-        agents.tau.at(detector) = 0;
+        updateAgentMatch(agents, presenter, detector);
+        updateAgentMatch(agents, detector, presenter);
 
         // Unpair old partner agents and register/reset taus
         if (presenter_partner > -1) {
-            agents.match.at(presenter_partner) = -1;
-            ++agents.taus_map.at(presenter_partner)[agents.tau.at(presenter_partner)];
-            agents.tau.at(presenter_partner) = 0;
+            updateAgentMatch(agents, presenter_partner, -1);
         }
 
         if (detector_partner > -1) {
-            agents.match.at(detector_partner) = -1;
-            ++agents.taus_map.at(detector_partner)[agents.tau.at(detector_partner)];
-            agents.tau.at(detector_partner) = 0;
+            updateAgentMatch(agents, detector_partner, -1);
         }
     }
 
@@ -281,6 +308,9 @@ namespace cfm
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
         for (auto& interaction : interactions_queue) {
+            // Randomly dissociate agents
+            dissociation(generator, agents);
+
             // Decide interaction outcome
             decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
         }
