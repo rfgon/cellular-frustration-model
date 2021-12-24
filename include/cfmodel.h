@@ -49,7 +49,7 @@ namespace cfm
     }
 
     // Initialize agents' properties
-    Agents initAgents(unsigned short int const n_agents)
+    Agents initAgents(unsigned short int const& n_agents)
     {
         Agents agents;
 
@@ -95,7 +95,7 @@ namespace cfm
     }
 
     // Initialize detectors' global lists
-    void initDetectorsGlobalLists(Agents& agents, unsigned short int n_presenters, const std::vector<std::vector<unsigned short int>>& global_lists)
+    void initDetectorsGlobalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<unsigned short int>>& global_lists)
     {
         unsigned short int i = 0;
         for (auto& row : global_lists) {
@@ -104,7 +104,7 @@ namespace cfm
     }
 
     // Initialize detectors' critical values lists
-    void initDetectorsCriticalLists(Agents& agents, unsigned short int n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
+    void initDetectorsCriticalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
     {
         unsigned short int i = 0;
         for (auto& row : left_criticals) {
@@ -117,7 +117,7 @@ namespace cfm
     }
 
     // Map sample features to presenters' signals
-    void mapSampleToPresentersSignals(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features, const std::vector<float> sample)
+    void mapSampleToPresentersSignals(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_features, const std::vector<float>& sample)
     {
         unsigned short int feature = 0;
         for (unsigned short int i = 0; i < n_presenters; ++i) {
@@ -130,7 +130,7 @@ namespace cfm
     }
 
     // Map presenters' signals to detectors' local lists
-    void mapSignalsToDetectorsLocalLists(Agents& agents, unsigned short int const n_presenters, unsigned short int const n_features)
+    void mapSignalsToDetectorsLocalLists(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_features)
     {
         // Loop through detectors
         for (unsigned short int i = n_presenters; i < agents.id.size(); ++i) {
@@ -160,6 +160,21 @@ namespace cfm
                     agents.local_list.at(i).at(j) = 2*j + 0;
                 }
             }
+        }
+    }
+
+    // Change sample and map its features to signals
+    void changeSample(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_samples, unsigned short int const& n_features, const std::vector<float>& sample, unsigned int& sample_counter)
+    {
+        // Change presenters signals
+        mapSampleToPresentersSignals(agents, n_presenters, n_features, sample);
+
+        // Change detectors local lists
+        mapSignalsToDetectorsLocalLists(agents, n_presenters, n_features);
+
+        // Reset sample counter
+        if (sample_counter == n_samples) {
+            sample_counter = 0;
         }
     }
 
@@ -257,7 +272,7 @@ namespace cfm
     }
 
     // Agents' interaction and pairing dynamics
-    void interactions(std::default_random_engine& generator, Agents& agents, unsigned short int const n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
+    void interactions(std::default_random_engine& generator, Agents& agents, unsigned short int const& n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
     {
         // Shuffle interactions queue
         std::shuffle(interactions_queue.begin(), interactions_queue.end(), generator);
@@ -269,17 +284,22 @@ namespace cfm
             // Decide interaction outcome
             decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
         }
+
+        // Update agents' taus
+        for (auto& tau : agents.tau) {
+            ++tau;
+        }
     }
 
     // Base cellular frustration dynamics
-    void cellularFrustration(unsigned short int const seed, Agents& agents, unsigned short int const n_presenters, unsigned int const frustration_rounds, unsigned short int const sample_rounds, unsigned short int const n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const n_features, const std::vector<std::vector<float>>& training_set)
+    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set)
     {
         // Initialize generator used in dynamic loop
         std::default_random_engine generator;
         generator.seed(seed);
 
         // Sample counter used to loop samples
-        int sample_counter = 0;
+        unsigned int sample_counter = 0;
 
         // Initialize interactions queue (indices = priority; elements = interaction pairs)
         std::vector<unsigned short int> interactions_queue(n_presenters);
@@ -291,27 +311,13 @@ namespace cfm
 
         // Main loop
         for (unsigned int round = 0; round < frustration_rounds; ++round) {
-            // Change sample
+            // Loop through samples
             if (round % sample_rounds == 0) {
-                // Change presenters signals
-                mapSampleToPresentersSignals(agents, n_presenters, n_features, training_set.at(samples_queue.at(sample_counter++)));
-
-                // Change detectors local lists
-                mapSignalsToDetectorsLocalLists(agents, n_presenters, n_features);
-
-                // Reset sample counter
-                if (sample_counter == n_samples) {
-                    sample_counter = 0;
-                }
+                changeSample(agents, n_presenters, n_samples, n_features, data_set.at(samples_queue.at(sample_counter++)), sample_counter);
             }
 
             // Loop through interactions between pairs of agents
             interactions(generator, agents, n_presenters, interactions_queue, interaction_pairs);
-
-            // Update agents' taus
-            for (auto& tau : agents.tau) {
-                ++tau;
-            }
         }
 
         // Register taus on last round
