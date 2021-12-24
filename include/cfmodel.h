@@ -272,7 +272,7 @@ namespace cfm
     }
 
     // Agents' interaction and pairing dynamics
-    void interactions(std::default_random_engine& generator, Agents& agents, unsigned short int const& n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
+    void interactions(std::mt19937& generator, Agents& agents, unsigned short int const& n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
     {
         // Shuffle interactions queue
         std::shuffle(interactions_queue.begin(), interactions_queue.end(), generator);
@@ -295,8 +295,7 @@ namespace cfm
     void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set)
     {
         // Initialize generator used in dynamic loop
-        std::default_random_engine generator;
-        generator.seed(seed);
+        std::mt19937 generator(seed);
 
         // Sample counter used to loop samples
         unsigned int sample_counter = 0;
@@ -305,7 +304,7 @@ namespace cfm
         std::vector<unsigned short int> interactions_queue(n_presenters);
         std::iota(interactions_queue.begin(), interactions_queue.end(), 0);
 
-        // Interaction pairs (indices = presenters' ids; elements = detectors' ids)
+        // Initialize interaction pairs (indices = presenters' ids; elements = detectors' ids)
         std::vector<unsigned short int> interaction_pairs(n_presenters);
         std::iota(interaction_pairs.begin(), interaction_pairs.end(), n_presenters);
 
