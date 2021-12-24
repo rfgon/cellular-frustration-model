@@ -226,6 +226,11 @@ namespace cfm
                 // Check presenter's preference
                 if (getSignalRank(agents, n_presenters, presenter, detector) < getSignalRank(agents, n_presenters, presenter, presenter_partner)) { // Rule 3
                     updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                } else if (getSignalRank(agents, n_presenters, presenter, detector) == getSignalRank(agents, n_presenters, presenter, presenter_partner)) {
+                    // Check how detectors see presenter's signal (as normal or abnormal)
+                    if (getSignalNormality(agents, detector, presenter) && !getSignalNormality(agents, presenter_partner, presenter)) { // Rule 4
+                        updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                    }
                 }
             }
         } else {
