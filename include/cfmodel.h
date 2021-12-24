@@ -235,7 +235,10 @@ namespace cfm
             }
         } else {
             if (presenter_partner == -1) {
-
+                // Check detector's preference
+                if (getSignalRank(agents, n_presenters, detector, presenter) < getSignalRank(agents, n_presenters, detector, detector_partner)) { // Rule 2
+                    updateAgentPairs(agents, presenter, presenter_partner, detector, detector_partner);
+                }
             } else {
                 // Check detector's preference
                 if (getSignalRank(agents, n_presenters, detector, presenter) < getSignalRank(agents, n_presenters, detector, detector_partner)) {
