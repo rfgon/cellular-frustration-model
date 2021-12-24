@@ -308,9 +308,6 @@ namespace cfm
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
         for (auto& interaction : interactions_queue) {
-            // Randomly dissociate agents
-            dissociation(generator, agents);
-
             // Decide interaction outcome
             decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
         }
@@ -347,6 +344,9 @@ namespace cfm
 
             // Loop through interactions between pairs of agents
             interactions(generator, agents, n_presenters, interactions_queue, interaction_pairs);
+
+            // Randomly dissociate agents
+            dissociation(generator, agents);
         }
 
         // Register taus on last round
