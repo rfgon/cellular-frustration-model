@@ -1,5 +1,6 @@
 #include "../include/utils.h"
 #include "../include/cfmodel.h"
+#include "../include/training.h"
 
 using namespace cfm;
 
@@ -66,11 +67,37 @@ int main()
     for (auto const& agent_map : agents.taus_map) {
         exportMap(agents_taus_file, agent_map);
     }
+    agents_taus_file.close();
 
     // Reset some of the agents' data structures
     resetAgentsMatch(agents);
     resetAgentsTau(agents);
     resetAgentsTausMap(agents);
+
+    // Number of iterations
+    unsigned int const training_rounds = params["training rounds"];
+
+    // Interval of iterations between each training session
+    unsigned short int const training_interval = params["training interval"];
+
+    // Dynamics with detectors training
+    training(seed, agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
+
+    // Reset some of the agents' data structures
+    resetAgentsMatch(agents);
+    resetAgentsTau(agents);
+    resetAgentsTausMap(agents);
+
+    agents_taus_file.open("../cellular-frustration-model/output/trained_taus.csv");
+
+    // Dynamics with untrained detectors
+    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+
+    // Export agents' taus
+    for (auto const& agent_map : agents.taus_map) {
+        exportMap(agents_taus_file, agent_map);
+    }
+    agents_taus_file.close();
 
     return 0;
 }

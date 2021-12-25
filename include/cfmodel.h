@@ -231,7 +231,7 @@ namespace cfm
     }
 
     // Get the rank of an agent's signal in another agent's global list
-    unsigned short int getSignalRank(Agents& agents, unsigned short int const& n_presenters, short int const& agent, short int const& agent_showing_signal)
+    unsigned short int getSignalRank(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& agent, unsigned short int const& agent_showing_signal)
     {
         // Presenters
         if (agent < n_presenters) {
