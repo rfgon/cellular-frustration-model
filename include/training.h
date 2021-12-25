@@ -2,7 +2,6 @@
 #define TRAINING_H
 
 #include "cfmodel.h"
-#include <cassert>  // assert
 
 namespace cfm
 {
@@ -41,9 +40,6 @@ namespace cfm
                 trained = true;
 
                 short int detector_partner = agents.match.at(i);
-                assert(detector_partner > -1 && "Detector must be paired");
-                assert(agents.match.at(detector_partner) == i && "Agents must be paired to same agent");
-                assert(agents.tau.at(i) == agents.tau.at(detector_partner) && "Paired agents must have same tau");
 
                 decreaseSignalRank(agents, i, agents.local_list.at(i).at(detector_partner), getSignalRank(agents, n_presenters, i, detector_partner), agents.global_list.at(i).size() - 1);
 
