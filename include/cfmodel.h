@@ -319,7 +319,7 @@ namespace cfm
     }
 
     // Base cellular frustration dynamics
-    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set, std::ofstream& taus_file)
+    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set)
     {
         // Initialize random number generator
         std::mt19937 generator(seed);
@@ -352,11 +352,6 @@ namespace cfm
         // Register taus on last round
         for (auto const& id : agents.id) {
             ++agents.taus_map.at(id)[agents.tau.at(id)];
-        }
-
-        // Export agents' taus
-        for (auto const& agent_map : agents.taus_map) {
-            exportMap(taus_file, agent_map);
         }
     }
 

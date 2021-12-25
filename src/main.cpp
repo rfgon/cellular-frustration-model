@@ -6,7 +6,7 @@ using namespace cfm;
 int main()
 {
     // Read parameters from file
-    std::map<std::string,int> params = parseParameters("../cellular-frustration-model/input/parameters.txt");
+    std::map<std::string, int> params = parseParameters("../cellular-frustration-model/input/parameters.txt");
 
     // Seed
     unsigned short int const seed = params["seed"];
@@ -14,7 +14,7 @@ int main()
     // Number of presenters sets
     unsigned short int const n_presenters_sets = params["presenters sets"];
 
-    // Number of rounds spent with a given sample
+    // Number of iterations analysing a sample
     unsigned short int const sample_rounds = params["sample rounds"];
 
     // Load training set
@@ -60,7 +60,12 @@ int main()
     std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
 
     // Dynamics with untrained detectors
-    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, agents_taus_file);
+    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+
+    // Export agents' taus
+    for (auto const& agent_map : agents.taus_map) {
+        exportMap(agents_taus_file, agent_map);
+    }
 
     return 0;
 }

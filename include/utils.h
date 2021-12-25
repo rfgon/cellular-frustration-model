@@ -4,7 +4,7 @@
 #include <iostream>     // cout, ws
 #include <string>       // string, getline, substr, erase, stoi
 #include <map>          // map
-#include <fstream>      // ifstream
+#include <fstream>      // ifstream, ofstream
 #include <algorithm>    // remove, find
 #include <vector>       // vector
 #include <sstream>      // stringstream
