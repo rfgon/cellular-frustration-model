@@ -9,7 +9,7 @@ namespace cfm
     // Decrease the current signal's rank in the detector's global list
     void decreaseSignalRank(Agents& agents, uint16_t const& detector, uint16_t const& signal, uint16_t const& old_rank, uint16_t const& new_rank)
     {
-        // Update all the signals' ranks
+        // Update all the signals' ranks displaced by the educated signal
         for (auto& rank : agents.global_list.at(detector)) {
             if (rank > old_rank && rank <= new_rank) {
                 --rank;
@@ -56,13 +56,13 @@ namespace cfm
     }
 
     // Cellular frustration dynamics with detector training
-    void training(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, unsigned int const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set, uint16_t const& training_interval)
+    void training(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set, uint16_t const& training_interval)
     {
         // Initialize random number generator
         std::mt19937 generator(seed);
 
         // Sample counter used to loop samples
-        unsigned int sample_counter = 0;
+        uint32_t sample_counter = 0;
 
         // Initialize interactions queue (indices = priority; elements = interaction pairs)
         std::vector<uint16_t> interactions_queue(n_presenters);
@@ -76,7 +76,7 @@ namespace cfm
         uint16_t threshold = training_interval;
 
         // Main loop
-        for (unsigned int round = 0; round < frustration_rounds; ++round) {
+        for (uint32_t round = 0; round < frustration_rounds; ++round) {
             // Loop through samples
             if (round % sample_rounds == 0) {
                 changeSample(agents, n_presenters, n_samples, n_features, data_set.at(samples_queue.at(sample_counter++)), sample_counter);

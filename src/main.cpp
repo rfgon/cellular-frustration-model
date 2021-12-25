@@ -55,7 +55,7 @@ int main()
     std::vector<uint16_t> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
 
     // Number of iterations
-    unsigned int const frustration_rounds = params["frustration rounds"];
+    uint32_t const frustration_rounds = params["frustration rounds"];
 
     // File used to write all the agents' registered taus
     std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
@@ -75,7 +75,7 @@ int main()
     resetAgentsTausMap(agents);
 
     // Number of iterations
-    unsigned int const training_rounds = params["training rounds"];
+    uint32_t const training_rounds = params["training rounds"];
 
     // Interval of iterations between each training session
     uint16_t const training_interval = params["training interval"];

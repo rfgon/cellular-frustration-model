@@ -21,10 +21,10 @@ namespace cfm
         std::vector<float> signal;
 
         // Current matching lifetime
-        std::vector<unsigned int> tau;
+        std::vector<uint32_t> tau;
 
         // All registered matching lifetimes
-        std::vector<std::map<unsigned int, unsigned int>> taus_map;
+        std::vector<std::map<uint32_t, uint32_t>> taus_map;
 
         // Global preference list
         std::vector<std::vector<uint16_t>> global_list;
@@ -164,7 +164,7 @@ namespace cfm
     }
 
     // Change sample and map its features to signals
-    void changeSample(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_samples, uint16_t const& n_features, const std::vector<float>& sample, unsigned int& sample_counter)
+    void changeSample(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_samples, uint16_t const& n_features, const std::vector<float>& sample, uint32_t& sample_counter)
     {
         // Change presenters signals
         mapSampleToPresentersSignals(agents, n_presenters, n_features, sample);
@@ -328,13 +328,13 @@ namespace cfm
     }
 
     // Base cellular frustration dynamics
-    void cellularFrustration(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, unsigned int const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set)
+    void cellularFrustration(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set)
     {
         // Initialize random number generator
         std::mt19937 generator(seed);
 
         // Sample counter used to loop samples
-        unsigned int sample_counter = 0;
+        uint32_t sample_counter = 0;
 
         // Initialize interactions queue (indices = sequence; elements = interaction pairs)
         std::vector<uint16_t> interactions_queue(n_presenters);
@@ -345,7 +345,7 @@ namespace cfm
         std::iota(interaction_pairs.begin(), interaction_pairs.end(), n_presenters);
 
         // Main loop
-        for (unsigned int round = 0; round < frustration_rounds; ++round) {
+        for (uint32_t round = 0; round < frustration_rounds; ++round) {
             // Loop through samples
             if (round % sample_rounds == 0) {
                 changeSample(agents, n_presenters, n_samples, n_features, data_set.at(samples_queue.at(sample_counter++)), sample_counter);

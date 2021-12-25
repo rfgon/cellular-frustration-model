@@ -231,7 +231,7 @@ namespace cfm
     }
 
     // Export map to file
-    void exportMap(std::ofstream& file, const std::map<unsigned int, unsigned int>& map_data)
+    void exportMap(std::ofstream& file, const std::map<uint32_t, uint32_t>& map_data)
     {
         // Check if file opened correctly
         if (!file.is_open()) {
