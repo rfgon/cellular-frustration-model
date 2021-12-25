@@ -56,8 +56,11 @@ int main()
     // Number of iterations
     unsigned int const frustration_rounds = params["frustration rounds"];
 
+    // File used to write all the agents' registered taus
+    std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
+
     // Dynamics with untrained detectors
-    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, agents_taus_file);
 
     return 0;
 }

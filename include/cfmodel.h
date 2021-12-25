@@ -98,7 +98,7 @@ namespace cfm
     void initDetectorsGlobalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<unsigned short int>>& global_lists)
     {
         unsigned short int i = 0;
-        for (auto& row : global_lists) {
+        for (auto const& row : global_lists) {
             agents.global_list.at(n_presenters + i++) = row;
         }
     }
@@ -107,11 +107,11 @@ namespace cfm
     void initDetectorsCriticalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
     {
         unsigned short int i = 0;
-        for (auto& row : left_criticals) {
+        for (auto const& row : left_criticals) {
             agents.left_criticals.at(n_presenters + i++) = row;
         }
         i = 0;
-        for (auto& row : right_criticals) {
+        for (auto const& row : right_criticals) {
             agents.right_criticals.at(n_presenters + i++) = row;
         }
     }
@@ -197,7 +197,7 @@ namespace cfm
         std::generate(std::begin(dissociation_probabilities), std::end(dissociation_probabilities), [&]{ return distribution(generator); });
 
         // Loop through all agents
-        for (auto& id : agents.id) {
+        for (auto const& id : agents.id) {
             // Check if agent is paired
             short int agent_partner = agents.match.at(id);
             if (agent_partner > -1) {
@@ -307,7 +307,7 @@ namespace cfm
         // Shuffle interaction pairs
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
-        for (auto& interaction : interactions_queue) {
+        for (auto const& interaction : interactions_queue) {
             // Decide interaction outcome
             decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
         }
@@ -319,9 +319,9 @@ namespace cfm
     }
 
     // Base cellular frustration dynamics
-    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set)
+    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set, std::ofstream& taus_file)
     {
-        // Initialize generator used in dynamic loop
+        // Initialize random number generator
         std::mt19937 generator(seed);
 
         // Sample counter used to loop samples
@@ -350,8 +350,13 @@ namespace cfm
         }
 
         // Register taus on last round
-        for (auto& id : agents.id) {
+        for (auto const& id : agents.id) {
             ++agents.taus_map.at(id)[agents.tau.at(id)];
+        }
+
+        // Export agents' taus
+        for (auto const& agent_map : agents.taus_map) {
+            exportMap(taus_file, agent_map);
         }
     }
 

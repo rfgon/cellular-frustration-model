@@ -13,7 +13,7 @@ namespace cfm
 {
 
     // Reads a file line by line and parses its contents
-    std::map<std::string,int> parseParameters(std::string const file_path)
+    std::map<std::string,int> parseParameters(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -60,7 +60,7 @@ namespace cfm
     }
 
     // Load floating-point data from a file into a matrix
-    std::vector<std::vector<float>> loadFloatMatrix(std::string const file_path)
+    std::vector<std::vector<float>> loadFloatMatrix(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -99,7 +99,7 @@ namespace cfm
     }
 
     // Load integer data from a file into a matrix
-    std::vector<std::vector<int>> loadIntMatrix(std::string const file_path)
+    std::vector<std::vector<int>> loadIntMatrix(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -138,7 +138,7 @@ namespace cfm
     }
 
     // Load unsigned integer data from a file into a matrix
-    std::vector<std::vector<unsigned short int>> loadUnsignedIntMatrix(std::string const file_path)
+    std::vector<std::vector<unsigned short int>> loadUnsignedIntMatrix(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -177,7 +177,7 @@ namespace cfm
     }
 
     // Load integer data from a file into a vector
-    std::vector<int> loadIntVector(std::string const file_path)
+    std::vector<int> loadIntVector(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -204,7 +204,7 @@ namespace cfm
     }
 
     // Load integer data from a file into a vector
-    std::vector<unsigned short int> loadUnsignedIntVector(std::string const file_path)
+    std::vector<unsigned short int> loadUnsignedIntVector(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -228,6 +228,32 @@ namespace cfm
         }
 
         return vector;
+    }
+
+    // Export map to file
+    void exportMap(std::ofstream& file, const std::map<unsigned int, unsigned int>& map_data)
+    {
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Write map keys
+        char const* separator = "";
+        for (auto const& kv : map_data) {
+            file << separator << kv.first;
+            separator = ",";
+        }
+        file << '\n';
+
+        // Write map values
+        separator = "";
+        for (auto const& kv : map_data) {
+            file << separator << kv.second;
+            separator = ",";
+        }
+        file << '\n';
     }
 
 } // namespace cfm
