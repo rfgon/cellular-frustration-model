@@ -2,7 +2,7 @@
 #define CFMODEL_H
 
 #include "utils.h"
-#include <random>   // mt19937, uniform_int_distribution, generate
+#include <random>   // mt19937, uniform_int_distribution
 
 namespace cfm
 {
@@ -10,9 +10,9 @@ namespace cfm
     // Agents' properties
     struct Agents
     {
-        std::vector<unsigned short int> id;
+        std::vector<uint16_t> id;
 
-        std::vector<unsigned short int> subtype;
+        std::vector<uint16_t> subtype;
 
         // Partner agent's id
         std::vector<short int> match;
@@ -27,10 +27,10 @@ namespace cfm
         std::vector<std::map<unsigned int, unsigned int>> taus_map;
 
         // Global preference list
-        std::vector<std::vector<unsigned short int>> global_list;
+        std::vector<std::vector<uint16_t>> global_list;
 
         // Local preference list
-        std::vector<std::vector<unsigned short int>> local_list;
+        std::vector<std::vector<uint16_t>> local_list;
 
         // Features left critical values
         std::vector<std::vector<float>> left_criticals;
@@ -49,7 +49,7 @@ namespace cfm
     }
 
     // Initialize agents' properties
-    Agents initAgents(unsigned short int const& n_agents)
+    Agents initAgents(uint16_t const& n_agents)
     {
         Agents agents;
 
@@ -64,7 +64,7 @@ namespace cfm
         agents.left_criticals.resize(n_agents);
         agents.right_criticals.resize(n_agents);
 
-        for (unsigned short int i = 0; i < n_agents; ++i) {
+        for (uint16_t i = 0; i < n_agents; ++i) {
             agents.id.at(i) = i;
 
             if (agents.id.at(i) < n_agents / 2) {
@@ -95,18 +95,18 @@ namespace cfm
     }
 
     // Initialize detectors' global lists
-    void initDetectorsGlobalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<unsigned short int>>& global_lists)
+    void initDetectorsGlobalLists(Agents& agents, uint16_t const& n_presenters, const std::vector<std::vector<uint16_t>>& global_lists)
     {
-        unsigned short int i = 0;
+        uint16_t i = 0;
         for (auto const& row : global_lists) {
             agents.global_list.at(n_presenters + i++) = row;
         }
     }
 
     // Initialize detectors' critical values lists
-    void initDetectorsCriticalLists(Agents& agents, unsigned short int const& n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
+    void initDetectorsCriticalLists(Agents& agents, uint16_t const& n_presenters, const std::vector<std::vector<float>>& left_criticals, const std::vector<std::vector<float>>& right_criticals)
     {
-        unsigned short int i = 0;
+        uint16_t i = 0;
         for (auto const& row : left_criticals) {
             agents.left_criticals.at(n_presenters + i++) = row;
         }
@@ -117,10 +117,10 @@ namespace cfm
     }
 
     // Map sample features to presenters' signals
-    void mapSampleToPresentersSignals(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_features, const std::vector<float>& sample)
+    void mapSampleToPresentersSignals(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_features, const std::vector<float>& sample)
     {
-        unsigned short int feature = 0;
-        for (unsigned short int i = 0; i < n_presenters; ++i) {
+        uint16_t feature = 0;
+        for (uint16_t i = 0; i < n_presenters; ++i) {
             // Reset feature counter at the end of every presenter set
             if (i % n_features == 0) {
                 feature = 0;
@@ -130,15 +130,15 @@ namespace cfm
     }
 
     // Map presenters' signals to detectors' local lists
-    void mapSignalsToDetectorsLocalLists(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_features)
+    void mapSignalsToDetectorsLocalLists(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_features)
     {
         // Loop through detectors
-        for (unsigned short int i = n_presenters; i < agents.id.size(); ++i) {
+        for (uint16_t i = n_presenters; i < agents.id.size(); ++i) {
             agents.local_list.at(i).resize(n_presenters);
 
             // Loop through presenters
-            unsigned short int feature = 0;
-            for (unsigned short int j = 0; j < n_presenters; ++j) {
+            uint16_t feature = 0;
+            for (uint16_t j = 0; j < n_presenters; ++j) {
                 // Reset feature counter at the end of every presenter set
                 if (feature == n_features) {
                     feature = 0;
@@ -164,7 +164,7 @@ namespace cfm
     }
 
     // Change sample and map its features to signals
-    void changeSample(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& n_samples, unsigned short int const& n_features, const std::vector<float>& sample, unsigned int& sample_counter)
+    void changeSample(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_samples, uint16_t const& n_features, const std::vector<float>& sample, unsigned int& sample_counter)
     {
         // Change presenters signals
         mapSampleToPresentersSignals(agents, n_presenters, n_features, sample);
@@ -179,7 +179,7 @@ namespace cfm
     }
 
     // Update agent match
-    void updateAgentMatch(Agents& agents, unsigned short int const& agent, short int const& match)
+    void updateAgentMatch(Agents& agents, uint16_t const& agent, short int const& match)
     {
         agents.match.at(agent) = match;
         ++agents.taus_map.at(agent)[agents.tau.at(agent)];
@@ -190,10 +190,10 @@ namespace cfm
     void dissociation(std::mt19937& generator, Agents& agents)
     {
         // Dissociation probability
-        std::uniform_int_distribution<unsigned short int> distribution(0, 999);
+        std::uniform_int_distribution<uint16_t> distribution(0, 999);
 
         // Initialize interaction pairs dissociation probabilities
-        std::vector<unsigned short int> dissociation_probabilities(agents.id.size());
+        std::vector<uint16_t> dissociation_probabilities(agents.id.size());
         std::generate(std::begin(dissociation_probabilities), std::end(dissociation_probabilities), [&]{ return distribution(generator); });
 
         // Loop through all agents
@@ -214,7 +214,7 @@ namespace cfm
     }
 
     // Update agent pairs and reset their tau counters
-    void updateAgentPairs(Agents& agents, unsigned short int const& presenter, short int const& presenter_partner, unsigned short int const& detector, short int const& detector_partner)
+    void updateAgentPairs(Agents& agents, uint16_t const& presenter, short int const& presenter_partner, uint16_t const& detector, short int const& detector_partner)
     {
         // Pair agents and register/reset taus
         updateAgentMatch(agents, presenter, detector);
@@ -231,7 +231,7 @@ namespace cfm
     }
 
     // Get the rank of an agent's signal in another agent's global list
-    unsigned short int getSignalRank(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& agent, unsigned short int const& agent_showing_signal)
+    uint16_t getSignalRank(Agents& agents, uint16_t const& n_presenters, uint16_t const& agent, uint16_t const& agent_showing_signal)
     {
         // Presenters
         if (agent < n_presenters) {
@@ -242,7 +242,7 @@ namespace cfm
     }
 
     // Return true if a detector sees a presenter's signal as normal and false otherwise
-    bool getSignalNormality(Agents& agents, unsigned short int const& detector, unsigned short int const& presenter)
+    bool getSignalNormality(Agents& agents, uint16_t const& detector, uint16_t const& presenter)
     {
         // Normal signal
         if (agents.local_list.at(detector).at(presenter) % 2 == 0) {
@@ -253,7 +253,7 @@ namespace cfm
     }
 
     // Decision rules for pairing agents
-    void decisionRules(Agents& agents, unsigned short int const& n_presenters, unsigned short int const& presenter, unsigned short int const& detector)
+    void decisionRules(Agents& agents, uint16_t const& n_presenters, uint16_t const& presenter, uint16_t const& detector)
     {
         // Presenter's partner
         short int presenter_partner = agents.match.at(presenter);
@@ -299,7 +299,7 @@ namespace cfm
     }
 
     // Agents' interaction and pairing dynamics
-    void interactions(std::mt19937& generator, Agents& agents, unsigned short int const& n_presenters, std::vector<unsigned short int>& interactions_queue, std::vector<unsigned short int>& interaction_pairs)
+    void interactions(std::mt19937& generator, Agents& agents, uint16_t const& n_presenters, std::vector<uint16_t>& interactions_queue, std::vector<uint16_t>& interaction_pairs)
     {
         // Shuffle interactions queue
         std::shuffle(interactions_queue.begin(), interactions_queue.end(), generator);
@@ -308,8 +308,8 @@ namespace cfm
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
         for (auto const& interaction : interactions_queue) {
-            unsigned short int presenter = interaction;
-            unsigned short int detector = interaction_pairs.at(interaction);
+            uint16_t presenter = interaction;
+            uint16_t detector = interaction_pairs.at(interaction);
 
             // Decide interaction outcome
             decisionRules(agents, n_presenters, presenter, detector);
@@ -328,7 +328,7 @@ namespace cfm
     }
 
     // Base cellular frustration dynamics
-    void cellularFrustration(unsigned short int const& seed, Agents& agents, unsigned short int const& n_presenters, unsigned int const& frustration_rounds, unsigned short int const& sample_rounds, unsigned short int const& n_samples, const std::vector<unsigned short int>& samples_queue, unsigned short int const& n_features, const std::vector<std::vector<float>>& data_set)
+    void cellularFrustration(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, unsigned int const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set)
     {
         // Initialize random number generator
         std::mt19937 generator(seed);
@@ -337,11 +337,11 @@ namespace cfm
         unsigned int sample_counter = 0;
 
         // Initialize interactions queue (indices = sequence; elements = interaction pairs)
-        std::vector<unsigned short int> interactions_queue(n_presenters);
+        std::vector<uint16_t> interactions_queue(n_presenters);
         std::iota(interactions_queue.begin(), interactions_queue.end(), 0);
 
         // Initialize interaction pairs (indices = presenters' ids; elements = detectors' ids)
-        std::vector<unsigned short int> interaction_pairs(n_presenters);
+        std::vector<uint16_t> interaction_pairs(n_presenters);
         std::iota(interaction_pairs.begin(), interaction_pairs.end(), n_presenters);
 
         // Main loop

@@ -5,7 +5,7 @@
 #include <string>       // string, getline, substr, erase, stoi
 #include <map>          // map
 #include <fstream>      // ifstream, ofstream
-#include <algorithm>    // remove, find
+#include <algorithm>    // remove, find, generate
 #include <vector>       // vector
 #include <sstream>      // stringstream
 
@@ -138,7 +138,7 @@ namespace cfm
     }
 
     // Load unsigned integer data from a file into a matrix
-    std::vector<std::vector<unsigned short int>> loadUnsignedIntMatrix(std::string const& file_path)
+    std::vector<std::vector<uint16_t>> loadUnsignedIntMatrix(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -150,7 +150,7 @@ namespace cfm
         }
 
         // Data matrix
-        std::vector<std::vector<unsigned short int>> matrix;
+        std::vector<std::vector<uint16_t>> matrix;
 
         // String for line and value
         std::string line, val;
@@ -158,7 +158,7 @@ namespace cfm
         // Read each line
         while (std::getline(file, line)) {
             // Row vector
-            std::vector<unsigned short int> vector;
+            std::vector<uint16_t> vector;
 
             // Stringstream line
             std::stringstream s(line);
@@ -204,7 +204,7 @@ namespace cfm
     }
 
     // Load integer data from a file into a vector
-    std::vector<unsigned short int> loadUnsignedIntVector(std::string const& file_path)
+    std::vector<uint16_t> loadUnsignedIntVector(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -216,7 +216,7 @@ namespace cfm
         }
 
         // Data vector
-        std::vector<unsigned short int> vector;
+        std::vector<uint16_t> vector;
 
         // String value
         std::string val;

@@ -10,37 +10,37 @@ int main()
     std::map<std::string, int> params = parseParameters("../cellular-frustration-model/input/parameters.txt");
 
     // Seed
-    unsigned short int const seed = params["seed"];
+    uint16_t const seed = params["seed"];
 
     // Number of presenters sets
-    unsigned short int const n_presenters_sets = params["presenters sets"];
+    uint16_t const n_presenters_sets = params["presenters sets"];
 
     // Number of iterations analysing a sample
-    unsigned short int const sample_rounds = params["sample rounds"];
+    uint16_t const sample_rounds = params["sample rounds"];
 
     // Load training set
     const std::vector<std::vector<float>> training_set = loadFloatMatrix("../cellular-frustration-model/input/training_set.csv");
 
     // Number of samples
-    unsigned short int n_samples = training_set.size();
+    uint16_t n_samples = training_set.size();
 
     // Number of features
-    unsigned short int const n_features = training_set.at(0).size();
+    uint16_t const n_features = training_set.at(0).size();
 
     // Number of presenters
-    unsigned short int const n_presenters = n_features * n_presenters_sets;
+    uint16_t const n_presenters = n_features * n_presenters_sets;
 
     // Number of detectors
-    unsigned short int const n_detectors = n_presenters;
+    uint16_t const n_detectors = n_presenters;
 
     // Number of agents
-    unsigned short int const n_agents = n_presenters + n_detectors;
+    uint16_t const n_agents = n_presenters + n_detectors;
 
     // Initialize agents
     Agents agents = initAgents(n_agents);
 
     // Load detectors' global lists
-    const std::vector<std::vector<unsigned short int>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
+    const std::vector<std::vector<uint16_t>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
 
     initDetectorsGlobalLists(agents, n_presenters, global_lists);
 
@@ -52,7 +52,7 @@ int main()
     initDetectorsCriticalLists(agents, n_presenters, left_criticals, right_criticals);
 
     // Load samples queue
-    std::vector<unsigned short int> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
+    std::vector<uint16_t> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
 
     // Number of iterations
     unsigned int const frustration_rounds = params["frustration rounds"];
@@ -78,7 +78,7 @@ int main()
     unsigned int const training_rounds = params["training rounds"];
 
     // Interval of iterations between each training session
-    unsigned short int const training_interval = params["training interval"];
+    uint16_t const training_interval = params["training interval"];
 
     // Dynamics with detectors training
     training(seed, agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
