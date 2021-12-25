@@ -238,17 +238,17 @@ namespace cfm
             return agents.global_list.at(agent).at(agents.signal.at(agent_showing_signal));
         }
         // Detectors
-        else {
-            return agents.global_list.at(agent).at(agents.local_list.at(agent).at(agent_showing_signal));
-        }
+        return agents.global_list.at(agent).at(agents.local_list.at(agent).at(agent_showing_signal));
     }
 
     // Return true if a detector sees a presenter's signal as normal and false otherwise
     bool getSignalNormality(Agents& agents, unsigned short int const& detector, unsigned short int const& presenter)
     {
+        // Normal signal
         if (agents.local_list.at(detector).at(presenter) % 2 == 0) {
             return true;
         }
+        // Abnormal signal
         return false;
     }
 
@@ -308,13 +308,22 @@ namespace cfm
         std::shuffle(interaction_pairs.begin(), interaction_pairs.end(), generator);
 
         for (auto const& interaction : interactions_queue) {
-            // Decide interaction outcome
-            decisionRules(agents, n_presenters, interaction, interaction_pairs.at(interaction));
-        }
+            unsigned short int presenter = interaction;
+            unsigned short int detector = interaction_pairs.at(interaction);
 
-        // Update agents' taus
-        for (auto& tau : agents.tau) {
-            ++tau;
+            // Decide interaction outcome
+            decisionRules(agents, n_presenters, presenter, detector);
+        }
+    }
+
+    // Update agents' metrics
+    void updateAgentsMetrics(Agents& agents)
+    {
+        for (auto const& id : agents.id) {
+            // Increment taus
+            if (agents.match.at(id) > -1) {
+                ++agents.tau.at(id);
+            }
         }
     }
 
@@ -327,7 +336,7 @@ namespace cfm
         // Sample counter used to loop samples
         unsigned int sample_counter = 0;
 
-        // Initialize interactions queue (indices = priority; elements = interaction pairs)
+        // Initialize interactions queue (indices = sequence; elements = interaction pairs)
         std::vector<unsigned short int> interactions_queue(n_presenters);
         std::iota(interactions_queue.begin(), interactions_queue.end(), 0);
 
@@ -347,11 +356,30 @@ namespace cfm
 
             // Randomly dissociate agents
             dissociation(generator, agents);
+
+            // Update agents' metrics
+            updateAgentsMetrics(agents);
         }
 
         // Register taus on last round
         for (auto const& id : agents.id) {
             ++agents.taus_map.at(id)[agents.tau.at(id)];
+        }
+    }
+
+    // Reset to zero agents' taus
+    void resetAgentsTau(Agents& agents)
+    {
+        for (auto& tau : agents.tau) {
+            tau = 0;
+        }
+    }
+
+    // Clear agents' taus maps
+    void resetAgentsTausMap(Agents& agents)
+    {
+        for (auto& tau_map : agents.taus_map) {
+            tau_map.clear();
         }
     }
 

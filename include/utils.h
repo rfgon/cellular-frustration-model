@@ -25,7 +25,7 @@ namespace cfm
         }
 
         // Parameters map
-        std::map<std::string,int> params;
+        std::map<std::string, int> params;
 
         // Read parameters into data structure
         while (file) {

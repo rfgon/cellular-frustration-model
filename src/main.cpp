@@ -67,5 +67,10 @@ int main()
         exportMap(agents_taus_file, agent_map);
     }
 
+    // Reset some of the agents' data structures
+    resetAgentsMatch(agents);
+    resetAgentsTau(agents);
+    resetAgentsTausMap(agents);
+
     return 0;
 }
