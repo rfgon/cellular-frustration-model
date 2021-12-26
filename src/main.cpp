@@ -40,9 +40,9 @@ int main()
     Agents agents = initAgents(n_agents);
 
     // Load detectors' global lists
-    const std::vector<std::vector<uint16_t>> global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
+    std::vector<std::vector<uint16_t>> detectors_global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
 
-    initDetectorsGlobalLists(agents, n_presenters, global_lists);
+    initDetectorsGlobalLists(agents, n_presenters, detectors_global_lists);
 
     // Load detectors' left/right critical values lists
     std::vector<std::vector<float>> left_criticals = loadFloatMatrix("../cellular-frustration-model/input/left_criticals.csv");
@@ -82,6 +82,15 @@ int main()
 
     // Dynamics with detectors training
     training(seed, agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
+
+    // File used to write all the detectors' global lists
+    std::ofstream detectors_global_lists_file("../cellular-frustration-model/input/trained_global_lists.csv");
+
+    // Export detectors' global lists
+    detectors_global_lists = {agents.global_list.begin() + n_presenters, agents.global_list.end()};
+    for (auto const& global_list : detectors_global_lists) {
+        exportVector(detectors_global_lists_file, global_list);
+    }
 
     // Reset some of the agents' data structures
     resetAgentsMatch(agents);

@@ -256,6 +256,24 @@ namespace cfm
         file << '\n';
     }
 
+    // Export vector to file
+    void exportVector(std::ofstream& file, const std::vector<uint16_t>& vector_data)
+    {
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Write vector values
+        char const* separator = "";
+        for (auto const& val : vector_data) {
+            file << separator << val;
+            separator = ",";
+        }
+        file << '\n';
+    }
+
 } // namespace cfm
 
 #endif // UTILS_H
