@@ -36,7 +36,7 @@ int main()
     // Initialize agents
     Agents agents = initAgents(n_agents);
 
-    // Load detectors' global lists
+    // Load untrained detectors' global lists
     std::vector<std::vector<uint16_t>> detectors_global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/untrained_global_lists.csv");
 
     initDetectorsGlobalLists(agents, n_presenters, detectors_global_lists);
@@ -48,62 +48,95 @@ int main()
 
     initDetectorsCriticalLists(agents, n_presenters, left_criticals, right_criticals);
 
-    // Load samples queue
-    std::vector<uint16_t> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
+    // Flag to execute the training portion of the program
+    bool const train_flag = params["train"];
 
-    // Number of iterations
-    uint32_t const frustration_rounds = params["frustration rounds"];
+    if (train_flag) {
+        // Load samples queue
+        std::vector<uint16_t> samples_queue = loadUnsignedIntVector("../cellular-frustration-model/input/samples_queue.csv");
 
-    // File used to write all the agents' registered taus
-    std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
+        // Number of iterations
+        uint32_t const frustration_rounds = params["frustration rounds"];
 
-    // Interval of iterations between each training session
-    uint16_t const training_interval = params["training interval"];
+        // File used to write all the agents' registered taus
+        std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
 
-    // Dynamics with untrained detectors
-    training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
+        // Interval of iterations between each training session
+        uint16_t const training_interval = params["training interval"];
 
-    // Export agents' taus
-    for (auto const& agent_map : agents.taus_map) {
-        exportMap(agents_taus_file, agent_map);
+        // Dynamics with untrained detectors
+        training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
+
+        // Export agents' taus
+        for (auto const& agent_map : agents.taus_map) {
+            exportMap(agents_taus_file, agent_map);
+        }
+        agents_taus_file.close();
+
+        // Reset some of the agents' data structures
+        resetAgentsMatch(agents);
+        resetAgentsTau(agents);
+        resetAgentsTausMap(agents);
+
+        // Number of iterations
+        uint32_t const training_rounds = params["training rounds"];
+
+        // Dynamics with detectors training
+        training(agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
+
+        // File used to write all the detectors' global lists
+        std::ofstream detectors_global_lists_file("../cellular-frustration-model/input/trained_global_lists.csv");
+
+        // Export detectors' global lists
+        detectors_global_lists = {agents.global_list.begin() + n_presenters, agents.global_list.end()};
+        for (auto const& global_list : detectors_global_lists) {
+            exportVector(detectors_global_lists_file, global_list);
+        }
+
+        // Reset some of the agents' data structures
+        resetAgentsMatch(agents);
+        resetAgentsTau(agents);
+        resetAgentsTausMap(agents);
+
+        agents_taus_file.open("../cellular-frustration-model/output/trained_taus.csv");
+
+        // Dynamics with trained detectors
+        training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
+
+        // Export agents' taus
+        for (auto const& agent_map : agents.taus_map) {
+            exportMap(agents_taus_file, agent_map);
+        }
+        agents_taus_file.close();
+
+        // Reset some of the agents' data structures
+        resetAgentsMatch(agents);
+        resetAgentsTau(agents);
+        resetAgentsTausMap(agents);
+
     }
-    agents_taus_file.close();
 
-    // Reset some of the agents' data structures
-    resetAgentsMatch(agents);
-    resetAgentsTau(agents);
-    resetAgentsTausMap(agents);
+    // Flag to execute the monitoring portion of the program
+    bool const monitor_flag = params["monitor"];
 
-    // Number of iterations
-    uint32_t const training_rounds = params["training rounds"];
+    if (monitor_flag) {
+        // Load trained detectors' global lists
+        detectors_global_lists = loadUnsignedIntMatrix("../cellular-frustration-model/input/trained_global_lists.csv");
 
-    // Dynamics with detectors training
-    training(agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
+        initDetectorsGlobalLists(agents, n_presenters, detectors_global_lists);
 
-    // File used to write all the detectors' global lists
-    std::ofstream detectors_global_lists_file("../cellular-frustration-model/input/trained_global_lists.csv");
+        // Load test set
+        const std::vector<std::vector<float>> test_set = loadFloatMatrix("../cellular-frustration-model/input/test_set.csv");
 
-    // Export detectors' global lists
-    detectors_global_lists = {agents.global_list.begin() + n_presenters, agents.global_list.end()};
-    for (auto const& global_list : detectors_global_lists) {
-        exportVector(detectors_global_lists_file, global_list);
+        // Load test set classes
+        const std::vector<std::vector<short int>> test_set_classes_matrix = loadShortIntMatrix("../cellular-frustration-model/input/test_set_classes.csv");
+        std::vector<short int> test_set_classes;
+        for (auto const& row : test_set_classes_matrix) {
+            for (auto const& val : row) {
+                test_set_classes.push_back(val);
+            }
+        }
     }
-
-    // Reset some of the agents' data structures
-    resetAgentsMatch(agents);
-    resetAgentsTau(agents);
-    resetAgentsTausMap(agents);
-
-    agents_taus_file.open("../cellular-frustration-model/output/trained_taus.csv");
-
-    // Dynamics with untrained detectors
-    training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
-
-    // Export agents' taus
-    for (auto const& agent_map : agents.taus_map) {
-        exportMap(agents_taus_file, agent_map);
-    }
-    agents_taus_file.close();
 
     return 0;
 }
