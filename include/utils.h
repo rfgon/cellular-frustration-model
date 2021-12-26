@@ -13,8 +13,8 @@
 namespace cfm
 {
 
-    // Reads a file line by line and parses its contents
-    std::map<std::string,int> parseParameters(std::string const& file_path)
+    // Read a file line by line and parse its contents
+    std::map<std::string, int> parseParameters(std::string const& file_path)
     {
         // Open file
         std::ifstream file(file_path);
@@ -204,7 +204,7 @@ namespace cfm
         return vector;
     }
 
-    // Load integer data from a file into a vector
+    // Load unsigned integer data from a file into a vector
     std::vector<uint16_t> loadUnsignedIntVector(std::string const& file_path)
     {
         // Open file
@@ -273,6 +273,45 @@ namespace cfm
             separator = ",";
         }
         file << '\n';
+    }
+
+    // Load short integer data from a file into a matrix
+    std::vector<std::vector<int16_t>> loadShortIntMatrix(std::string const& file_path)
+    {
+        // Open file
+        std::ifstream file(file_path);
+
+        // Check if file opened correctly
+        if (!file.is_open()) {
+            std::cout << "Error opening file" << '\n';
+            std::exit(EXIT_FAILURE);
+        }
+
+        // Data matrix
+        std::vector<std::vector<int16_t>> matrix;
+
+        // String for line and value
+        std::string line, val;
+
+        // Read each line
+        while (std::getline(file, line)) {
+            // Row vector
+            std::vector<int16_t> vector;
+
+            // Stringstream line
+            std::stringstream s(line);
+
+            // Get each feature's value
+            while (std::getline(s, val, ',')) {
+                // Add value to row vector
+                vector.push_back(std::stoi(val));
+            }
+
+            // Add row vector to matrix
+            matrix.push_back(vector);
+        }
+
+        return matrix;
     }
 
 } // namespace cfm
