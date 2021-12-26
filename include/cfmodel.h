@@ -15,7 +15,7 @@ namespace cfm
         std::vector<uint16_t> subtype;
 
         // Partner agent's id
-        std::vector<short int> match;
+        std::vector<int16_t> match;
 
         // Signal shown
         std::vector<float> signal;
@@ -174,7 +174,7 @@ namespace cfm
     }
 
     // Update agent match
-    void updateAgentMatch(Agents& agents, uint16_t const& agent, short int const& match)
+    void updateAgentMatch(Agents& agents, uint16_t const& agent, int16_t const& match)
     {
         agents.match.at(agent) = match;
         ++agents.taus_map.at(agent)[agents.tau.at(agent)];
@@ -194,7 +194,7 @@ namespace cfm
         // Loop through all agents
         for (auto const& id : agents.id) {
             // Check if agent is paired
-            short int agent_partner = agents.match.at(id);
+            int16_t agent_partner = agents.match.at(id);
             if (agent_partner > -1) {
                 // Dissociate
                 if (dissociation_probabilities.at(id) == 0) {
@@ -209,7 +209,7 @@ namespace cfm
     }
 
     // Update agent pairs and reset their tau counters
-    void updateAgentPairs(Agents& agents, uint16_t const& presenter, short int const& presenter_partner, uint16_t const& detector, short int const& detector_partner)
+    void updateAgentPairs(Agents& agents, uint16_t const& presenter, int16_t const& presenter_partner, uint16_t const& detector, int16_t const& detector_partner)
     {
         // Pair agents and register/reset taus
         updateAgentMatch(agents, presenter, detector);
@@ -251,10 +251,10 @@ namespace cfm
     void decisionRules(Agents& agents, uint16_t const& n_presenters, uint16_t const& presenter, uint16_t const& detector)
     {
         // Presenter's partner
-        short int presenter_partner = agents.match.at(presenter);
+        int16_t presenter_partner = agents.match.at(presenter);
 
         // Detector's partner
-        short int detector_partner = agents.match.at(detector);
+        int16_t detector_partner = agents.match.at(detector);
 
         if (detector_partner == -1) {
             if (presenter_partner == -1) { // Rule 1

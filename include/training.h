@@ -39,7 +39,7 @@ namespace cfm
             if (detector_tau > threshold) {
                 trained = true;
 
-                short int detector_partner = agents.match.at(i);
+                int16_t detector_partner = agents.match.at(i);
 
                 decreaseSignalRank(agents, i, agents.local_list.at(i).at(detector_partner), getSignalRank(agents, n_presenters, i, detector_partner), agents.global_list.at(i).size() - 1);
 
