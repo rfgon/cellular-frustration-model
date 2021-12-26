@@ -57,9 +57,6 @@ int main()
     // File used to write all the agents' registered taus
     std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
 
-    // Number of iterations
-    uint32_t const training_rounds = params["training rounds"];
-
     // Interval of iterations between each training session
     uint16_t const training_interval = params["training interval"];
 
@@ -76,6 +73,9 @@ int main()
     resetAgentsMatch(agents);
     resetAgentsTau(agents);
     resetAgentsTausMap(agents);
+
+    // Number of iterations
+    uint32_t const training_rounds = params["training rounds"];
 
     // Dynamics with detectors training
     training(agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);

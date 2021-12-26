@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <iostream>     // cout, ws
+#include <cstdlib>      // exit
 #include <string>       // string, getline, substr, erase, stoi
 #include <map>          // map
 #include <fstream>      // ifstream, ofstream
