@@ -1,6 +1,7 @@
 #include "../include/utils.h"
 #include "../include/cfmodel.h"
 #include "../include/training.h"
+#include "../include/monitoring.h"
 
 using namespace cfm;
 
@@ -130,14 +131,18 @@ int main()
         // Load test set
         const std::vector<std::vector<float>> test_set = loadFloatMatrix("../cellular-frustration-model/input/test_set.csv");
 
+        // Number of samples
+        n_samples = test_set.size();
+
         // Load test set classes
         const std::vector<std::vector<int16_t>> test_set_classes_matrix = loadShortIntMatrix("../cellular-frustration-model/input/test_set_classes.csv");
-        std::vector<int16_t> test_set_classes;
+        std::vector<int16_t> test_set_classes_temp;
         for (auto const& row : test_set_classes_matrix) {
             for (auto const& val : row) {
-                test_set_classes.push_back(val);
+                test_set_classes_temp.push_back(val);
             }
         }
+        const std::vector<int16_t> test_set_classes = test_set_classes_temp;
     }
 
     return 0;
