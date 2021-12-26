@@ -55,14 +55,11 @@ namespace cfm
         }
     }
 
-    // Cellular frustration dynamics with detector training
-    void training(uint16_t const& seed, Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set, uint16_t const& training_interval)
+    // Cellular frustration dynamics with detector training by default
+    void training(Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& sample_rounds, uint16_t const& n_samples, const std::vector<uint16_t>& samples_queue, uint16_t const& n_features, const std::vector<std::vector<float>>& data_set, uint16_t const& training_interval, bool const& training_flag = true, uint16_t const& seed = 0)
     {
         // Initialize random number generator
         std::mt19937 generator(seed);
-
-        // Sample counter used to loop samples
-        uint32_t sample_counter = 0;
 
         // Initialize interactions queue (indices = priority; elements = interaction pairs)
         std::vector<uint16_t> interactions_queue(n_presenters);
@@ -71,6 +68,9 @@ namespace cfm
         // Initialize interaction pairs (indices = presenters' ids; elements = detectors' ids)
         std::vector<uint16_t> interaction_pairs(n_presenters);
         std::iota(interaction_pairs.begin(), interaction_pairs.end(), n_presenters);
+
+        // Sample counter used to loop samples
+        uint32_t sample_counter = 0;
 
         // Initialize education threshold
         uint16_t threshold = training_interval;
@@ -92,7 +92,7 @@ namespace cfm
             updateAgentsMetrics(agents);
 
             // Train eligible detectors
-            if (round % training_interval == 0 && round > 0) {
+            if (training_flag && round % training_interval == 0 && round > 0) {
                 education(generator, agents, n_presenters, threshold);
             }
         }

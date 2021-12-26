@@ -9,9 +9,6 @@ int main()
     // Read parameters from file
     std::map<std::string, int> params = parseParameters("../cellular-frustration-model/input/parameters.txt");
 
-    // Seed
-    uint16_t const seed = params["seed"];
-
     // Number of presenters sets
     uint16_t const n_presenters_sets = params["presenters sets"];
 
@@ -60,8 +57,14 @@ int main()
     // File used to write all the agents' registered taus
     std::ofstream agents_taus_file("../cellular-frustration-model/output/untrained_taus.csv");
 
+    // Number of iterations
+    uint32_t const training_rounds = params["training rounds"];
+
+    // Interval of iterations between each training session
+    uint16_t const training_interval = params["training interval"];
+
     // Dynamics with untrained detectors
-    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+    training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
 
     // Export agents' taus
     for (auto const& agent_map : agents.taus_map) {
@@ -74,14 +77,8 @@ int main()
     resetAgentsTau(agents);
     resetAgentsTausMap(agents);
 
-    // Number of iterations
-    uint32_t const training_rounds = params["training rounds"];
-
-    // Interval of iterations between each training session
-    uint16_t const training_interval = params["training interval"];
-
     // Dynamics with detectors training
-    training(seed, agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
+    training(agents, n_presenters, training_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval);
 
     // File used to write all the detectors' global lists
     std::ofstream detectors_global_lists_file("../cellular-frustration-model/input/trained_global_lists.csv");
@@ -100,7 +97,7 @@ int main()
     agents_taus_file.open("../cellular-frustration-model/output/trained_taus.csv");
 
     // Dynamics with untrained detectors
-    cellularFrustration(seed, agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set);
+    training(agents, n_presenters, frustration_rounds, sample_rounds, n_samples, samples_queue, n_features, training_set, training_interval, false);
 
     // Export agents' taus
     for (auto const& agent_map : agents.taus_map) {
