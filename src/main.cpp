@@ -113,7 +113,6 @@ int main()
         resetAgentsMatch(agents);
         resetAgentsTau(agents);
         resetAgentsTausMap(agents);
-
     }
 
     // Flag to execute the monitoring portion of the program
@@ -125,12 +124,15 @@ int main()
 
         initDetectorsGlobalLists(agents, n_presenters, detectors_global_lists);
 
+        // Number of iterations
+        uint16_t const monitoring_rounds = params["monitoring rounds"];
+
         // Load test set
         const std::vector<std::vector<float>> test_set = loadFloatMatrix("../cellular-frustration-model/input/test_set.csv");
 
         // Load test set classes
-        const std::vector<std::vector<short int>> test_set_classes_matrix = loadShortIntMatrix("../cellular-frustration-model/input/test_set_classes.csv");
-        std::vector<short int> test_set_classes;
+        const std::vector<std::vector<int16_t>> test_set_classes_matrix = loadShortIntMatrix("../cellular-frustration-model/input/test_set_classes.csv");
+        std::vector<int16_t> test_set_classes;
         for (auto const& row : test_set_classes_matrix) {
             for (auto const& val : row) {
                 test_set_classes.push_back(val);

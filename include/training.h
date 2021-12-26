@@ -79,7 +79,12 @@ namespace cfm
         for (uint32_t round = 0; round < frustration_rounds; ++round) {
             // Loop through samples
             if (round % sample_rounds == 0) {
-                changeSample(agents, n_presenters, n_samples, n_features, data_set.at(samples_queue.at(sample_counter++)), sample_counter);
+                changeSample(agents, n_presenters, n_features, data_set.at(samples_queue.at(sample_counter++)));
+
+                // Reset sample counter
+                if (sample_counter == n_samples) {
+                    sample_counter = 0;
+                }
             }
 
             // Loop through interactions between pairs of agents

@@ -164,18 +164,13 @@ namespace cfm
     }
 
     // Change sample and map its features to signals
-    void changeSample(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_samples, uint16_t const& n_features, const std::vector<float>& sample, uint32_t& sample_counter)
+    void changeSample(Agents& agents, uint16_t const& n_presenters, uint16_t const& n_features, const std::vector<float>& sample)
     {
         // Change presenters signals
         mapSampleToPresentersSignals(agents, n_presenters, n_features, sample);
 
         // Change detectors local lists
         mapSignalsToDetectorsLocalLists(agents, n_presenters, n_features);
-
-        // Reset sample counter
-        if (sample_counter == n_samples) {
-            sample_counter = 0;
-        }
     }
 
     // Update agent match
