@@ -203,6 +203,12 @@ int main()
             resetAgentsTau(agents);
             resetAgentsTausMap(agents);
         }
+
+        // Number of iterations
+        uint16_t const activation_threshold_percent = params["activation threshold percent"];
+
+        // Compute activation threshold for each detector
+        computeActivationThresholds(agents, n_presenters, number_pairings, activation_threshold_percent, n_normal_samples);
     }
 
     return 0;

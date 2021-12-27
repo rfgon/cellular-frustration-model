@@ -38,6 +38,8 @@ namespace cfm
         // Features right critical values
         std::vector<std::vector<float>> right_criticals;
 
+        // Activation threshold used for calculating responses
+        std::vector<uint32_t> activation_thresholds;
     };
 
     // Unmatch all agents
@@ -63,6 +65,7 @@ namespace cfm
         agents.local_list.resize(n_agents);
         agents.left_criticals.resize(n_agents);
         agents.right_criticals.resize(n_agents);
+        agents.activation_thresholds.resize(n_agents);
 
         for (uint16_t i = 0; i < n_agents; ++i) {
             agents.id.at(i) = i;

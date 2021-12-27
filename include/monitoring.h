@@ -67,6 +67,24 @@ namespace cfm
         }
     }
 
+    // Compute activation threshold of each detector based on its number of pairings list
+    void computeActivationThresholds(Agents& agents, uint16_t const& n_presenters, const std::vector<std::vector<uint32_t>>& number_pairings, uint16_t const& activation_threshold_percent, uint16_t const& n_normal_samples)
+    {
+        // Sort number of pairings from highest to lowest
+        std::vector<std::vector<uint32_t>> number_pairings_sorted = number_pairings;
+        for (auto& row : number_pairings_sorted) {
+            std::sort(row.rbegin(), row.rend());
+        }
+
+        // Compute each detector's activation threshold
+        for (auto const& id : agents.id) {
+            if (id < n_presenters) {
+                continue;
+            }
+            agents.activation_thresholds.at(id) = number_pairings_sorted.at(id - n_presenters).at((uint16_t)((n_normal_samples - 1) * (float)activation_threshold_percent / 100));
+        }
+    }
+
     // Cellular frustration dynamics with trained detectors that monitor test samples
     void monitoring(Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& n_features, const std::vector<float>& sample, uint16_t const& seed = 0)
     {

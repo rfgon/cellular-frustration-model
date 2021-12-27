@@ -6,7 +6,7 @@
 #include <string>       // string, getline, substr, erase, stoi, stod
 #include <map>          // map
 #include <fstream>      // ifstream, ofstream
-#include <algorithm>    // remove, find, generate
+#include <algorithm>    // remove, find, shuffle, generate, sort
 #include <vector>       // vector
 #include <sstream>      // stringstream
 
