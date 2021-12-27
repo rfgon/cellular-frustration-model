@@ -3,7 +3,7 @@
 
 #include <iostream>     // cout, ws
 #include <cstdlib>      // exit
-#include <string>       // string, getline, substr, erase, stoi
+#include <string>       // string, getline, substr, erase, stoi, stod
 #include <map>          // map
 #include <fstream>      // ifstream, ofstream
 #include <algorithm>    // remove, find, generate
@@ -232,7 +232,8 @@ namespace cfm
     }
 
     // Export map to file
-    void exportMap(std::ofstream& file, const std::map<uint32_t, uint32_t>& map_data)
+    template<class T1, class T2>
+    void exportMap(std::ofstream& file, const std::map<T1, T2>& map_data)
     {
         // Check if file opened correctly
         if (!file.is_open()) {
@@ -258,7 +259,8 @@ namespace cfm
     }
 
     // Export vector to file
-    void exportVector(std::ofstream& file, const std::vector<uint16_t>& vector_data)
+    template<class T>
+    void exportVector(std::ofstream& file, const std::vector<T>& vector_data)
     {
         // Check if file opened correctly
         if (!file.is_open()) {
