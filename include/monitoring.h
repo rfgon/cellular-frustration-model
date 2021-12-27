@@ -7,6 +7,19 @@
 namespace cfm
 {
 
+    // Compute a map's right to left cumulative sum
+    template<class T1, class T2>
+    std::map<T1, T2> computeMapCumulativeSum(const std::map<T1, T2>& map_data)
+    {
+        std::map<T1, T2> map_data_temp = map_data;
+        for (auto it = std::next(map_data_temp.rbegin(), +1); it != map_data_temp.rend(); ++it) {
+            auto tau_right = std::next(it, -1)->second;
+            map_data_temp[it->first] += tau_right;
+        }
+
+        return map_data_temp;
+    }
+
     // Compute activation tau based on the calibration samples
     uint16_t computeActivationTau(Agents& agents, uint16_t const& n_presenters, const std::vector<std::map<uint16_t, uint32_t>>& calibration_taus_map, uint16_t n_calibration_samples)
     {
@@ -24,10 +37,7 @@ namespace cfm
         uint16_t n_calibration_agents = agents.id.size() - n_presenters;
 
         // Cumulative sum of taus
-        for (auto it = std::next(aggregate_taus_map.rbegin(), +1); it != aggregate_taus_map.rend(); ++it) {
-            auto tau_right = std::next(it, -1)->second;
-            aggregate_taus_map[it->first] += tau_right;
-        }
+        aggregate_taus_map = computeMapCumulativeSum(aggregate_taus_map);
 
         // Average of taus per sample per agent considered for the calibration
         for (auto& kv : aggregate_taus_map) {
@@ -52,10 +62,7 @@ namespace cfm
             }
 
             // Cumulative sum of taus
-            for (auto it = std::next(agents.taus_map.at(id).rbegin(), +1); it != agents.taus_map.at(id).rend(); ++it) {
-                auto tau_right = std::next(it, -1)->second;
-                agents.taus_map.at(id)[it->first] += tau_right;
-            }
+            agents.taus_map.at(id) = computeMapCumulativeSum(agents.taus_map.at(id));
 
             // Find the closest tau to activation tau and get its number of pairings
             auto it = agents.taus_map.at(id).lower_bound(activation_tau);

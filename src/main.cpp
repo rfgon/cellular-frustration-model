@@ -204,7 +204,7 @@ int main()
             resetAgentsTausMap(agents);
         }
 
-        // Number of iterations
+        // Activation threshold percentage used to select the reference number of pairings generated for all normal test samples
         uint16_t const activation_threshold_percent = params["activation threshold percent"];
 
         // Compute activation threshold for each detector
