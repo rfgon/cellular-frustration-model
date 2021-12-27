@@ -42,6 +42,31 @@ namespace cfm
         return aggregate_taus_map.rbegin()->first;
     }
 
+    // Register the number of pairings for the activation tau after the monitoring of a sample
+    void getNumberPairingsForActivationTau(Agents& agents, uint16_t const& n_presenters, std::vector<std::vector<uint32_t>>& number_pairings, uint16_t activation_tau)
+    {
+        // Loop through detectors
+        for (auto const& id : agents.id) {
+            if (id < n_presenters) {
+                continue;
+            }
+
+            // Cumulative sum of taus
+            for (auto it = std::next(agents.taus_map.at(id).rbegin(), +1); it != agents.taus_map.at(id).rend(); ++it) {
+                auto tau_right = std::next(it, -1)->second;
+                agents.taus_map.at(id)[it->first] += tau_right;
+            }
+
+            // Find the closest tau to activation tau and get its number of pairings
+            auto it = agents.taus_map.at(id).lower_bound(activation_tau);
+            if (it == agents.taus_map.at(id).end()) { // No tau greater than or equal to activation tau found
+                number_pairings.at(id - n_presenters).push_back(agents.taus_map.at(id).rbegin()->second);
+            } else {
+                number_pairings.at(id - n_presenters).push_back(it->second);
+            }
+        }
+    }
+
     // Cellular frustration dynamics with trained detectors that monitor test samples
     void monitoring(Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& n_features, const std::vector<float>& sample, uint16_t const& seed = 0)
     {

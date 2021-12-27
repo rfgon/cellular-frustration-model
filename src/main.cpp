@@ -49,6 +49,8 @@ int main()
 
     initDetectorsCriticalLists(agents, n_presenters, left_criticals, right_criticals);
 
+    // -----------------/TRAINING/-----------------
+
     // Flag to execute the training portion of the program
     bool const train_flag = params["train"];
 
@@ -116,6 +118,8 @@ int main()
         resetAgentsTausMap(agents);
     }
 
+    // -----------------/MONITORING/-----------------
+
     // Flag to execute the monitoring portion of the program
     bool const monitor_flag = params["monitor"];
 
@@ -147,7 +151,7 @@ int main()
         // All registered taus across calibration samples
         std::vector<std::map<uint16_t, uint32_t>> calibration_taus_map(n_agents);
 
-        // Tau calibration with normal test samples
+        // Activation tau calibration with normal test samples
         for (uint16_t i = 0; i < n_samples; ++i) {
             if (test_set_classes.at(i) != -1) {
                 continue;
@@ -168,7 +172,7 @@ int main()
             resetAgentsTausMap(agents);
         }
 
-        // Number of normal samples
+        // Number of normal test samples
         uint16_t n_normal_samples = 0;
         for (auto const& test_set_class : test_set_classes) {
             if (test_set_class == -1) {
@@ -178,6 +182,27 @@ int main()
 
         // Compute activation tau
         uint16_t activation_tau = computeActivationTau(agents, n_presenters, calibration_taus_map, n_normal_samples);
+        calibration_taus_map.clear();
+
+        // All number of pairings for the activation tau for all normal test samples
+        std::vector<std::vector<uint32_t>> number_pairings(n_detectors);
+
+        // Activation threshold calibration with normal test samples
+        for (uint16_t i = 0; i < n_samples; ++i) {
+            if (test_set_classes.at(i) != -1) {
+                continue;
+            }
+
+            monitoring(agents, n_presenters, monitoring_rounds, n_features, test_set.at(i));
+
+            // Register the number of pairings for the activation tau
+            getNumberPairingsForActivationTau(agents, n_presenters, number_pairings, activation_tau);
+
+            // Reset some of the agents' data structures
+            resetAgentsMatch(agents);
+            resetAgentsTau(agents);
+            resetAgentsTausMap(agents);
+        }
     }
 
     return 0;
