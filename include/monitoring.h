@@ -2,9 +2,45 @@
 #define MONITORING_H
 
 #include "cfmodel.h"
+#include <iterator> // iterator, next
 
 namespace cfm
 {
+
+    // Compute activation tau based on the calibration samples
+    uint16_t computeActivationTau(Agents& agents, uint16_t const& n_presenters, const std::vector<std::map<uint16_t, uint32_t>>& calibration_taus_map, uint16_t n_calibration_samples)
+    {
+        // Aggregate all the detectors' taus maps into one map
+        std::map<uint16_t, float> aggregate_taus_map;
+        for (auto const& id : agents.id) {
+            if (id >= n_presenters) {
+                for (auto const& kv : calibration_taus_map.at(id)) {
+                    aggregate_taus_map[kv.first] += kv.second;
+                }
+            }
+        }
+
+        // Number of agents considered for the calibration
+        uint16_t n_calibration_agents = agents.id.size() - n_presenters;
+
+        // Cumulative sum of taus
+        for (auto it = std::next(aggregate_taus_map.rbegin(), +1); it != aggregate_taus_map.rend(); ++it) {
+            auto tau_right = std::next(it, -1)->second;
+            aggregate_taus_map[it->first] += tau_right;
+        }
+
+        // Average of taus per sample per agent considered for the calibration
+        for (auto& kv : aggregate_taus_map) {
+            kv.second /= (float)n_calibration_samples / n_calibration_agents;
+
+            // Find the first activation tau that meets criteria
+            if (kv.second < 1) {
+                return kv.first;
+            }
+        }
+
+        return aggregate_taus_map.rbegin()->first;
+    }
 
     // Cellular frustration dynamics with trained detectors that monitor test samples
     void monitoring(Agents& agents, uint16_t const& n_presenters, uint32_t const& frustration_rounds, uint16_t const& n_features, const std::vector<float>& sample, uint16_t const& seed = 0)

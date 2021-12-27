@@ -24,7 +24,7 @@ namespace cfm
         std::vector<uint32_t> tau;
 
         // All registered matching lifetimes
-        std::vector<std::map<uint32_t, uint32_t>> taus_map;
+        std::vector<std::map<uint16_t, uint32_t>> taus_map;
 
         // Global preference list
         std::vector<std::vector<uint16_t>> global_list;

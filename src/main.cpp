@@ -143,6 +143,41 @@ int main()
             }
         }
         const std::vector<int16_t> test_set_classes = test_set_classes_temp;
+
+        // All registered taus across calibration samples
+        std::vector<std::map<uint16_t, uint32_t>> calibration_taus_map(n_agents);
+
+        // Tau calibration with normal test samples
+        for (uint16_t i = 0; i < n_samples; ++i) {
+            if (test_set_classes.at(i) != -1) {
+                continue;
+            }
+
+            monitoring(agents, n_presenters, monitoring_rounds, n_features, test_set.at(i));
+
+            // Register calibration taus
+            for (auto const& id : agents.id) {
+                for (auto const& kv : agents.taus_map.at(id)) {
+                    calibration_taus_map.at(id)[kv.first] += kv.second;
+                }
+            }
+
+            // Reset some of the agents' data structures
+            resetAgentsMatch(agents);
+            resetAgentsTau(agents);
+            resetAgentsTausMap(agents);
+        }
+
+        // Number of normal samples
+        uint16_t n_normal_samples = 0;
+        for (auto const& test_set_class : test_set_classes) {
+            if (test_set_class == -1) {
+                ++n_normal_samples;
+            }
+        }
+
+        // Compute activation tau
+        uint16_t activation_tau = computeActivationTau(agents, n_presenters, calibration_taus_map, n_normal_samples);
     }
 
     return 0;
