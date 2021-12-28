@@ -209,6 +209,31 @@ int main()
 
         // Compute activation threshold for each detector
         computeActivationThresholds(agents, n_presenters, number_pairings, activation_threshold_percent, n_normal_samples);
+
+        // Responses for all test samples
+        std::vector<uint32_t> responses(n_samples);
+
+        // Get responses from detectors towards normal and abnormal test samples
+        for (uint16_t i = 0; i < n_samples; ++i) {
+            monitoring(agents, n_presenters, monitoring_rounds, n_features, test_set.at(i));
+
+            // Register the number of pairings for the activation tau
+            getNumberPairingsForActivationTau(agents, n_presenters, number_pairings, activation_tau);
+
+            // Compute response to sample
+            responses.at(i) = computeCollectiveResponse(agents, n_presenters, activation_tau);
+
+            // Reset some of the agents' data structures
+            resetAgentsMatch(agents);
+            resetAgentsTau(agents);
+            resetAgentsTausMap(agents);
+        }
+
+        // File used to write all the responses to test samples
+        std::ofstream responses_file("../cellular-frustration-model/output/responses.csv");
+
+        // Export responses to test samples
+        exportVector(responses_file, responses);
     }
 
     return 0;

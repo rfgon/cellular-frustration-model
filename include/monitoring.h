@@ -21,7 +21,7 @@ namespace cfm
     }
 
     // Compute activation tau based on the calibration samples
-    uint16_t computeActivationTau(Agents& agents, uint16_t const& n_presenters, const std::vector<std::map<uint16_t, uint32_t>>& calibration_taus_map, uint16_t n_calibration_samples)
+    uint16_t computeActivationTau(Agents& agents, uint16_t const& n_presenters, const std::vector<std::map<uint16_t, uint32_t>>& calibration_taus_map, uint16_t const& n_calibration_samples)
     {
         // Aggregate all the detectors' taus maps into one map
         std::map<uint16_t, float> aggregate_taus_map;
@@ -53,7 +53,7 @@ namespace cfm
     }
 
     // Register the number of pairings for the activation tau after the monitoring of a sample
-    void getNumberPairingsForActivationTau(Agents& agents, uint16_t const& n_presenters, std::vector<std::vector<uint32_t>>& number_pairings, uint16_t activation_tau)
+    void getNumberPairingsForActivationTau(Agents& agents, uint16_t const& n_presenters, std::vector<std::vector<uint32_t>>& number_pairings, uint16_t const& activation_tau)
     {
         // Loop through detectors
         for (auto const& id : agents.id) {
@@ -64,12 +64,12 @@ namespace cfm
             // Cumulative sum of taus
             agents.taus_map.at(id) = computeMapCumulativeSum(agents.taus_map.at(id));
 
-            // Find the closest tau to activation tau and get its number of pairings
+            // Get the number of pairings for the activation tau, otherwise its zero
             auto it = agents.taus_map.at(id).lower_bound(activation_tau);
-            if (it == agents.taus_map.at(id).end()) { // No tau greater than or equal to activation tau found
-                number_pairings.at(id - n_presenters).push_back(agents.taus_map.at(id).rbegin()->second);
-            } else {
+            if (it != agents.taus_map.at(id).end()) {
                 number_pairings.at(id - n_presenters).push_back(it->second);
+            } else {
+                number_pairings.at(id - n_presenters).push_back(0);
             }
         }
     }
@@ -90,6 +90,34 @@ namespace cfm
             }
             agents.activation_thresholds.at(id) = number_pairings_sorted.at(id - n_presenters).at((uint16_t)((n_normal_samples - 1) * (float)activation_threshold_percent / 100));
         }
+    }
+
+    // Compute the collective response of the detectors towards a test sample
+    uint32_t computeCollectiveResponse(Agents const& agents, uint16_t const& n_presenters, uint16_t const& activation_tau)
+    {
+        // Collective response
+        uint32_t response_sum = 0;
+
+        // Loop through detectors
+        const std::vector<uint16_t> detectors_ids = {agents.id.begin() + n_presenters, agents.id.end()};
+        for (auto const& id : detectors_ids) {
+
+            // Cumulative sum of taus
+            std::map<uint16_t, uint32_t> agent_taus_map_temp = agents.taus_map.at(id);
+            agent_taus_map_temp = computeMapCumulativeSum(agent_taus_map_temp);
+
+            // Get the number of pairings for the activation tau, otherwise its zero
+            auto it = agent_taus_map_temp.lower_bound(activation_tau);
+            uint32_t number_pairings = 0;
+            if (it != agent_taus_map_temp.end()) {
+                number_pairings = it->second;
+            }
+
+            // Compute individual response and add it to collective response
+            response_sum += (number_pairings - agents.activation_thresholds.at(id)) * (number_pairings > agents.activation_thresholds.at(id));
+        }
+
+        return response_sum;
     }
 
     // Cellular frustration dynamics with trained detectors that monitor test samples
