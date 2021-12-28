@@ -25,23 +25,20 @@ namespace cfm
     {
         // Aggregate all the detectors' taus maps into one map
         std::map<uint16_t, float> aggregate_taus_map;
-        for (auto const& id : agents.id) {
-            if (id >= n_presenters) {
-                for (auto const& kv : calibration_taus_map.at(id)) {
-                    aggregate_taus_map[kv.first] += kv.second;
-                }
+        const std::vector<uint16_t> detectors_ids = {agents.id.begin() + n_presenters, agents.id.end()};
+        for (auto const& id : detectors_ids) {
+            for (auto const& kv : calibration_taus_map.at(id)) {
+                aggregate_taus_map[kv.first] += kv.second;
             }
         }
-
-        // Number of agents considered for the calibration
-        uint16_t n_calibration_agents = agents.id.size() - n_presenters;
 
         // Cumulative sum of taus
         aggregate_taus_map = computeMapCumulativeSum(aggregate_taus_map);
 
         // Average of taus per sample per agent considered for the calibration
         for (auto& kv : aggregate_taus_map) {
-            kv.second /= (float)n_calibration_samples / n_calibration_agents;
+            kv.second /= n_calibration_samples;
+            kv.second /= detectors_ids.size();
 
             // Find the first activation tau that meets criteria
             if (kv.second < 1) {
@@ -56,11 +53,8 @@ namespace cfm
     void getNumberPairingsForActivationTau(Agents& agents, uint16_t const& n_presenters, std::vector<std::vector<uint32_t>>& number_pairings, uint16_t const& activation_tau)
     {
         // Loop through detectors
-        for (auto const& id : agents.id) {
-            if (id < n_presenters) {
-                continue;
-            }
-
+        const std::vector<uint16_t> detectors_ids = {agents.id.begin() + n_presenters, agents.id.end()};
+        for (auto const& id : detectors_ids) {
             // Cumulative sum of taus
             agents.taus_map.at(id) = computeMapCumulativeSum(agents.taus_map.at(id));
 
@@ -84,10 +78,8 @@ namespace cfm
         }
 
         // Compute each detector's activation threshold
-        for (auto const& id : agents.id) {
-            if (id < n_presenters) {
-                continue;
-            }
+        const std::vector<uint16_t> detectors_ids = {agents.id.begin() + n_presenters, agents.id.end()};
+        for (auto const& id : detectors_ids) {
             agents.activation_thresholds.at(id) = number_pairings_sorted.at(id - n_presenters).at((uint16_t)((n_normal_samples - 1) * (float)activation_threshold_percent / 100));
         }
     }
