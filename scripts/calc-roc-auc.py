@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics import auc
 
 
 def computeFprTpr(normal_responses, abnormal_responses):
@@ -14,7 +13,7 @@ def computeFprTpr(normal_responses, abnormal_responses):
     # TPR for each normal response threshold
     tpr = []
 
-    # Cycle through every normal response threshold
+    # Loop through every normal response threshold
     for threshold in thresholds:
         # Number of false positives
         fp = 0
@@ -49,7 +48,20 @@ def computeFprTpr(normal_responses, abnormal_responses):
     return np.flip(fpr, axis=0), np.flip(tpr, axis=0)
 
 
-# Load responses
+def computeAuc(fpr, tpr):
+    """Compute AUC from FPR and TPR values using numerical integration with the trapezoidal rule with non-uniform grid"""
+
+    # Initialize AUC
+    auc = 0
+
+    # Compute integral
+    for i in range(1, len(fpr)):
+        auc += (tpr[i] + tpr[i - 1]) * (fpr[i] - fpr[i - 1]) / 2
+
+    return auc
+
+
+# Load responses towards test samples
 responses = np.loadtxt("output/responses.csv", dtype=int, delimiter=',')
 
 # Load classes of the samples corresponding to each response
@@ -71,11 +83,11 @@ fpr_interp = np.linspace(0, 1, 101)
 tpr_interp = np.interp(fpr_interp, fpr_vals, tpr_vals)
 
 # Get AUC for interpolated values
-auc_val = auc(fpr_interp, tpr_interp)
+auc_val = computeAuc(fpr_interp, tpr_interp)
 
 # Export ROC curve
 roc_vals = np.column_stack((fpr_interp * 100, tpr_interp * 100))
 np.savetxt("output/roc_curve.csv", roc_vals, fmt=['%d', '%.2f'], delimiter=',')
 
-# Export auc
-np.savetxt("output/auc.csv", [auc_val * 100], fmt='%.2f', delimiter=',')
+# Export AUC
+np.savetxt("output/auc.csv", [np.around(auc_val * 100, 2)], fmt='%.2f', delimiter=',')
