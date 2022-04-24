@@ -20,7 +20,7 @@ The Cellular Frustration Model models interactions between agents that randomly 
 
 ## Usage
 
-Before using this algoritm, a reading of the documentation provided in docs/ folders is strongly recommended.
+Before using this algorithm, reading the documentation provided in docs/ folder is recommended.
 
 **Linux/macOS**:
 1. Install the GCC compiler.
